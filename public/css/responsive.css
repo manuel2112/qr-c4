@@ -1,0 +1,57 @@
+@media (min-width: 768px) {
+	.modal-xl {
+	  width: 90%;
+	 max-width:1200px;
+	}
+  }
+
+/*Extra large devices (large desktops, 1200px and up)*/
+@media (max-width: 1199px) {
+}
+
+/*Large devices (desktops, 992px and up)*/
+@media (max-width: 991px) {
+	.barra-lateral{
+		min-width: auto;
+	}
+	.barra-lateral .logo{
+		display:none;
+	}
+	.barra-lateral .menu a span{
+		display:none;
+	}
+	.barra-lateral .menu a i{
+		margin-right:0;
+	}	
+}
+
+/*Medium devices (tablets, 768px and up)*/
+@media (max-width: 767px) {
+}
+
+/*Small devices (landscape phones, 576px and up)*/
+@media (max-width: 575px) {	
+	.barra-lateral{
+		min-height: auto;
+	}
+	.barra-lateral .menu a{
+		display:inline-block;
+		border-bottom: none;
+	}
+	main .widget form button{
+		width:100%;
+	}
+	main .columna{
+		padding:0 10px;
+	}
+    main .widget button.close,
+    main .widget button.btn-res {
+        width: 20% !important;
+    }	
+	#pay .well{
+		width: 50%;
+	}
+	#pay .well h1{
+		font-size: 2rem;
+	}
+}

@@ -1,0 +1,51 @@
+html {
+    font-size: 12px;
+}
+
+body {
+    background: #262a34;
+    font-family: Verdana, Geneva, sans-serif;
+}
+
+
+/*************************************************************/
+/*************************CSS*********************************/
+/*************************************************************/
+
+img.logo {
+    text-align: center;
+    margin: 150px auto 50px;
+    width: 500px;
+}
+
+form input {
+    margin: 0 0 20px;
+}
+
+form button {
+    cursor: pointer;
+}
+
+.chosen-container, .chosen-container-single {
+    width: 100% !important;
+}
+
+.color-modal-header{
+    background:#3c8dbc;
+    color:white;
+}
+
+.input-group a{
+    color: #333;
+}
+
+#login h1{
+    color: #fff;
+    text-align: center;
+    margin: 0 0 15px;
+}
+
+a.registro{
+    font-size: 2rem;
+    padding: 20px;
+}

@@ -133,14 +133,6 @@ var app = new Vue({
             this.validar();            
         },
         validarDireccion(){
-            // if( !this.registro.direccion ){
-            //     this.error.direccion = '*Dirección empresa obligatorio';
-            //     this.boolRegistro.direccion = false;
-            // }
-            // else{
-            //     this.error.direccion        = '';
-            //     this.boolRegistro.direccion = true;
-            // }
             this.registro.direccion     = this.registro.direccion.toUpperCase();
             this.validar();
         },
@@ -259,7 +251,7 @@ var app = new Vue({
             this.loadingMail = '<i class="fas fa-spinner fa-spin"></i>';
 
             const dataString = { email: this.registro.email };
-            await this.$http.post(base_url + 'registro/existeEmail', dataString).then(function(res) {
+            await this.$http.post(`${base_url}registro/existeEmail`, dataString).then(function(res) {
 
                 self.loadingMail = '';
                 

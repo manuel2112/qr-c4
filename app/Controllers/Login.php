@@ -1,21 +1,30 @@
-<?php 
+<?php
 
 namespace App\Controllers;
+use App\Models\LoginModel;
+use App\Models\CiudadModel;
 
 class Login extends BaseController {
 
+	public $session;
+	public $ciudadMdl;
+
     public function __construct()
     {
-        parent::__construct();
+		helper(['fecha','base','form']);
+		$this->session = \Config\Services::session();
+		$loginMdl = new LoginModel();
+		$this->ciudadMdl = new CiudadModel();
 		//EDITAR PASSWORD ADMIN
-		$this->login_model->editPassAdmin(md5(fechaNowPass()));
+		$loginMdl->editPassAdmin(md5(fechaNowPass()));
     }	
 
 	public function index()
 	{
-		if ( $this->session->userdata('idqrsession') ) {
+		if ( $this->session->get('idqrsession') ) {
 			redirect(base_url());
 		}
+
 		$data['registro'] = false;
 		if ( isset($_GET['cod']) ){
 			
@@ -28,9 +37,9 @@ class Login extends BaseController {
 				$data['registro'] = true;
 			}
 		}
-		
-		$data['regiones'] = $this->ciudad_model->getRegion();		
-		$this->load->view('login/index',$data);
+				
+		$data['regiones'] = $this->ciudadMdl->getRegiones()->getResult();
+		return view('login/index',$data);
 	}
 	
 	public function login()
@@ -72,7 +81,7 @@ class Login extends BaseController {
 
 	public function referido()
 	{
-		$data 		= array();
+		$data = array();
 
 		$data['referidos']   = array(
 									array(
@@ -102,7 +111,7 @@ class Login extends BaseController {
 									),
 								);
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function contacto()

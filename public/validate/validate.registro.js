@@ -76,7 +76,7 @@ var app = new Vue({
             Swal.showLoading();
             
             const dataString = { registro: this.registro };
-            this.$http.post(base_url + 'registro/ingreso', dataString).then(function(res) {
+            this.$http.post(`${base_url}registro/ingreso`, dataString).then(function(res) {
                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);

@@ -1,28 +1,35 @@
 <?php
 
 namespace App\Controllers;
-// require APPPATH.'third_party/endroid_qrcode/autoload.php';
-		
-// use Endroid\QrCode\ErrorCorrectionLevel;
-// use Endroid\QrCode\QrCode;
+
+use App\Models\EmpresaModel;
+use App\Models\MembresiaModel;
 
 class Home extends BaseController {
+
+	public $session_id;
+	public $empresaMdl;
+	public $membresiaMdl;
 	
 	public function __construct()
 	{
-		// parent::__construct();
-		// if (!$this->session->userdata('idqrsession')) {
-		// 	$this->session->set_userdata('', current_url());
-		// 	redirect(base_url('login'));
-		// }
-		// $this->session_id 			= $this->session->userdata('idqrsession');
-		// $this->session_nmb 			= $this->session->userdata('nmbqrsession');
-		// $this->isadminqrsession 	= $this->session->userdata('isadminqrsession');
+		if (!session('usuario')) {
+			header('Location: '.base_url('login'));
+			exit();
+		}
+
+		helper(['base','validate','fecha','log']);		
+		$this->empresaMdl	= new EmpresaModel();
+		$this->membresiaMdl	= new MembresiaModel();
+
+		$session = session();
+		$this->session_id = $session->get('usuario')['idqrsession'];
+
 	}
 
 	public function index()
 	{
-		$this->layout->view('index');
+		return view('home/index');
 	}
 
 	public function instanciar()
@@ -30,18 +37,18 @@ class Home extends BaseController {
 		$data 		= array();
         $idEmpresa 	= $this->session_id;
 
-		$membresiaActual	= $this->membresia_model->getMembresiaEmpresaEnUso($idEmpresa);
+		$membresiaActual	= $this->membresiaMdl->getMembresiaEmpresaEnUso($idEmpresa)->getRow();
 		downPlan($membresiaActual);
 
-        $empresa				= $this->empresa_model->getEmpresaRow($idEmpresa);
+        $empresa				= $this->empresaMdl->getEmpresaRow($idEmpresa)->getRow();
         $data['empresa']		= $empresa;
 		$data['msnMembresia']  	= avisoMembresia($idEmpresa);
 
-		//GET QR
-		$qr = $this->empresa_model->getEmpresaQRRow($idEmpresa);
+		// //GET QR
+		$qr = $this->empresaMdl->getEmpresaQRRow($idEmpresa)->getRow();
 		$data['qr'] = $qr->EMP_QR_IMG;
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 	
 	public function help()

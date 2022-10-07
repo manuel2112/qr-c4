@@ -45,16 +45,18 @@ class MembresiaModel extends Model
     {
         $where = array(
                         'empresa_membresia.EMPRESA_ID'      => $idEmpresa,
-						'empresa_membresia.EMP_MEMB_FLAG'   => true
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_membresia")
-					    ->join('membresia', 'membresia.MEMBRESIA_ID = empresa_membresia.MEMBRESIA_ID')
-                        ->where($where)
-                        ->order_by('empresa_membresia.EMP_MEMB_ID ASC')
-                        ->get();
-        return $query->result();
+                        'empresa_membresia.EMP_MEMB_FLAG'   => true
+                      );
+    
+        $builder = $this->db->table('empresa_membresia');
+        $builder->select('*');
+        $builder->join('membresia', 'membresia.MEMBRESIA_ID = empresa_membresia.MEMBRESIA_ID');
+        $builder->where($where);
+        $builder->orderBy('empresa_membresia.EMP_MEMB_ID', 'ASC');
+        $builder->limit(1);
+        $query = $builder->get();
+    
+        return $query;
     }
 
     public function getMembresiasAll( $idEmpresa )
@@ -89,12 +91,11 @@ class MembresiaModel extends Model
     }
 	
 	public function updateMembresiaPorCampo($campoWhere,$valueWhere,$campoArr,$valueArr)
-    {
-		$array = array(
-                            $campoArr => $valueArr
-					   );
-		$this->db->where($campoWhere, $valueWhere);
-		$this->db->update('empresa_membresia', $array);
+    {        
+        $builder = $this->db->table('empresa_membresia');
+        $builder->set($campoArr, $valueArr);
+        $builder->where($campoWhere, $valueWhere);
+        $builder->update();
     }
 	
 	public function updateMembresiaDownBronce($idEmpresa)
@@ -135,18 +136,19 @@ class MembresiaModel extends Model
     public function getMembresiaEmpresaEnUso($idEmpresa)
     {
         $where = array(
-						'empresa_membresia.EMPRESA_ID'	    => $idEmpresa,
-						'empresa_membresia.EMP_MEMB_FLAG'   => true
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_membresia")
-					    ->join('membresia', 'membresia.MEMBRESIA_ID = empresa_membresia.MEMBRESIA_ID')
-                        ->where($where)
-                        ->order_by('empresa_membresia.EMP_MEMB_ID ASC')
-                        ->limit(1)
-                        ->get();
-        return $query->row();
+                        'empresa_membresia.EMPRESA_ID'	    => $idEmpresa,
+                        'empresa_membresia.EMP_MEMB_FLAG'   => true
+                      );
+    
+        $builder = $this->db->table('empresa_membresia');
+        $builder->select('*');
+        $builder->join('membresia', 'membresia.MEMBRESIA_ID = empresa_membresia.MEMBRESIA_ID');
+        $builder->where($where);
+        $builder->orderBy('empresa_membresia.EMP_MEMB_ID', 'ASC');
+        $builder->limit(1);
+        $query = $builder->get();
+    
+        return $query;
     }
     
 	/*=============================================

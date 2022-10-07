@@ -175,7 +175,7 @@ var app = new Vue({
             Swal.showLoading();
             
             var dataString = { recuperar: this.recuperar };
-            this.$http.post(base_url + 'login/recuperarpass', dataString ).then(function(res) {
+            this.$http.post(`${base_url}login/recuperarpass`, dataString ).then(function(res) {
 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);

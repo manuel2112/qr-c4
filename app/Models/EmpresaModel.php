@@ -116,15 +116,16 @@ class EmpresaModel extends Model
 
   public function getEmpresaTblRow($idEmpresa)
   {
-      $where = array(
-          "EMPRESA_ID" => $idEmpresa
-          );
-      $query = $this->db
-                      ->select("*")
-                      ->from("empresa")
-                      ->where($where)
-                      ->get();
-      return $query->row();
+    $where = array(
+                    "EMPRESA_ID" => $idEmpresa
+                  );
+
+    $builder = $this->db->table('empresa');
+    $builder->select('*');
+    $builder->where($where);
+    $query = $builder->get();
+
+    return $query;
   }
 
 	public function updateDatosEmpresa($idEmpresa,$nombre,$fono,$direccion,$descripcion,$comuna,$slug)
@@ -181,16 +182,17 @@ class EmpresaModel extends Model
     
   public function getEmpresaQRRow($idEmpresa)
   {
-      $where = array(
-          "EMPRESA_ID" 	=> $idEmpresa,
-          "EMP_QR_FLAG"	=> TRUE
-          );
-      $query = $this->db
-                      ->select("*")
-                      ->from("empresa_qr")
-                      ->where($where)
-                      ->get();
-      return $query->row();
+    $where = array(
+                    "EMPRESA_ID" 	=> $idEmpresa,
+                    "EMP_QR_FLAG"	=> TRUE
+                  );
+
+    $builder = $this->db->table('empresa_qr');
+    $builder->select('*');
+    $builder->where($where);
+    $query = $builder->get();
+
+    return $query;
 	}
 
 	public function insertEmpresaQR($data)

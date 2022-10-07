@@ -15,9 +15,9 @@ new Vue({
             Swal.showLoading();
             const self = this;
 
-            this.$http.post(base_url + 'home/instanciar').then(function(res) {
+            this.$http.post(`${base_url}/home/instanciar`).then(function(res) {
                 
-                self.qr             = res.data.qr;
+                self.qr             = `${base_url }/public/${res.data.qr}`;
                 self.empresa        = res.data.empresa;
                 self.msnMembresia   = res.data.msnMembresia;
                 Swal.close();

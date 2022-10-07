@@ -3,26 +3,29 @@
 namespace App\Controllers;
 use App\Models\LoginModel;
 use App\Models\CiudadModel;
+use App\Models\EmpresaModel;
 
 class Login extends BaseController {
-
-	public $session;
+	
 	public $ciudadMdl;
+	public $empresaMdl;
+	public $loginMdl;
 
     public function __construct()
     {
-		helper(['fecha','base','form']);
-		$this->session = \Config\Services::session();
-		$loginMdl = new LoginModel();
-		$this->ciudadMdl = new CiudadModel();
+		helper(['fecha','base','form','random','email','emailBody','validate']);
+		$this->loginMdl 	= new LoginModel();
+		$this->ciudadMdl 	= new CiudadModel();
+		$this->empresaMdl	= new EmpresaModel();
+		
 		//EDITAR PASSWORD ADMIN
-		$loginMdl->editPassAdmin(md5(fechaNowPass()));
+		$this->loginMdl->editPassAdmin(md5(fechaNowPass()));
     }	
 
 	public function index()
 	{
-		if ( $this->session->get('idqrsession') ) {
-			redirect(base_url());
+		if ( $this->session->get('usuario') ) {
+			return redirect()->to(base_url());
 		}
 
 		$data['registro'] = false;
@@ -50,33 +53,30 @@ class Login extends BaseController {
 		$user	    = $request->login->user;
 		$pass  		= md5($request->login->pass);
 
-		$res = $this->login_model->getLoginRow($user,$pass);
+		$res = $this->loginMdl->getLoginRow($user,$pass)->getRow();
 
 		$data['existe'] 	= $res ? true : false;
 		$data['permiso'] 	= $res && ($res->EMPRESA_STATUS == 1) ? true : false;
 
 		//CREAR SESION
 		if( $res ){
-			$this->session->set_userdata("idqrsession", $res->EMPRESA_ID);
-			$this->session->userdata('idqrsession');
-			$this->session->set_userdata("nmbqrsession", $res->EMPRESA_NOMBRE);
-			$this->session->userdata('nmbqrsession');
-			$this->session->set_userdata("isadminqrsession", $res->EMPRESA_ADMIN);
-			$this->session->userdata('isadminqrsession');
+			session()->set('usuario', array(
+				'idqrsession'  		=> $res->EMPRESA_ID,
+				'nmbqrsession'     	=> $res->EMPRESA_NOMBRE,
+				'isadminqrsession' 	=> $res->EMPRESA_ADMIN,
+			));
 			insertAccion($res->EMPRESA_ID, 1, null, null);
 			$data['URL']	= base_url();
 		}
 
-		echo json_encode($data);
+		return $this->response->setJSON($data);
 	}
 
     public function logout()
 	{
-		$this->session->unset_userdata('idqrsession');
-		$this->session->unset_userdata('nmbqrsession');
-		$this->session->unset_userdata('isadminqrsession');
-		$this->session->sess_destroy();
-		redirect(base_url().'login', 301);
+		$this->session->remove('usuario');
+		$this->session->destroy();
+		return redirect()->to(base_url('login'));
 	}
 
 	public function referido()
@@ -129,7 +129,7 @@ class Login extends BaseController {
 		//ERROR DE ENVÍO
 		$data['ok']	= $exito ? TRUE : FALSE;
 
-		echo json_encode($data);
+		return $this->response->setJSON($data);	
 		
 	}
 
@@ -141,11 +141,11 @@ class Login extends BaseController {
 		$recuperar		= $request->recuperar;
 		$email			= $recuperar->email;
 
-		$empresa = $this->empresa_model->getEmpresaExisteCampoRow('EMPRESA_EMAIL',$email);
+		$empresa = $this->empresaMdl->getEmpresaExisteCampoRow('EMPRESA_EMAIL',$email)->getRow();
 
 		if( !$empresa ){
 			$data['existe'] = true;
-			echo json_encode($data);
+			return $this->response->setJSON($data);
 			exit();
 		}
 
@@ -154,7 +154,7 @@ class Login extends BaseController {
 		$nombre		= $empresa->EMPRESA_NOMBRE;
 		$campo 		= 'EMPRESA_REC_PASS';
 		$codRec 	= generaRandom();
-		$this->empresa_model->updateEmpresaCampo($idEmpresa, $campo, $codRec);
+		$this->empresaMdl->updateEmpresaCampo($idEmpresa, $campo, $codRec);
 
 		$codAttr	= "u=$email&h=$codRec";
 		$urlRec		= base_url('login/recpass?'.$codAttr);
@@ -163,7 +163,7 @@ class Login extends BaseController {
 
 		$data['ok'] = $exito ? TRUE: FALSE;
 
-		echo json_encode($data);		
+		return $this->response->setJSON($data);		
 	}
 	
 	public function recpass()
@@ -197,6 +197,6 @@ class Login extends BaseController {
 		$this->empresa_model->updateEmpresaCampo($idEmpresa, $campo, $valor);
 
 		$data['ok'] = true;
-		echo json_encode($data);		
+		return $this->response->setJSON($data);
 	}
 }

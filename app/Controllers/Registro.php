@@ -65,7 +65,7 @@ class Registro extends BaseController {
 				'EMPRESA_REFERIDO'      => $referido,
 				'EMPRESA_RESPONSABLE'	=> $responsable
 			];
-			$idEmpresa = $this->empresaMdl->insertEmpresa($insert);			
+			$idEmpresa = $this->empresaMdl->insertEmpresa($insert);
 	
 			//CREATE QR
 			create_qr($idEmpresa);

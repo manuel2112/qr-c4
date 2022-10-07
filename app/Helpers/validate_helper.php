@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\AccionModel;
 use App\Models\EmpresaModel;
 use App\Models\MembresiaModel;
 
@@ -101,10 +102,9 @@ if(!function_exists('tieneMembresia'))
 {    
         function tieneMembresia($idEmpresa)
         {
-                $ci = &get_instance();
-                $ci->load->model('empresa_model');
+                $empresaMdl = new EmpresaModel();
                 $permiso = true;        
-                $mdlEmpresa = $ci->empresa_model->getEmpresaTblRow($idEmpresa); 
+                $mdlEmpresa = $empresaMdl->getEmpresaTblRow($idEmpresa)->getRow(); 
                 if( !$mdlEmpresa->EMPRESA_MEMBRESIA ){
                    $permiso = false;
                 }
@@ -117,13 +117,12 @@ if(!function_exists('avisoMembresia'))
 {
         function avisoMembresia($idEmpresa)
         {
-                $ci = &get_instance();
-                $ci->load->model('membresia_model');
+                $membresiaMdl = new MembresiaModel();
 
                 $msn                    = '';
                 $diasAviso              = 5;
-                $membresiaActual        = $ci->membresia_model->getMembresiaEmpresaEnUso($idEmpresa);
-                $membresiasTotal        = $ci->membresia_model->getMembresiasPlan($idEmpresa);
+                $membresiaActual        = $membresiaMdl->getMembresiaEmpresaEnUso($idEmpresa)->getRow();
+                $membresiasTotal        = $membresiaMdl->getMembresiasPlan($idEmpresa)->getRow();
 
                 if( $membresiaActual->MEMBRESIA_ID == 1 ){
                         $msn  = '<div class="alert alert-warning alert-dismissible fade show">';
@@ -147,30 +146,29 @@ if(!function_exists('downPlan'))
 {
         function downPlan($mdl)
         {
-                $ci = &get_instance();
-                $ci->load->model('membresia_model');
+                $membresiaMdl = new MembresiaModel();
 
-				$ahora 		= fechaNow();
-				$hasta      = $mdl->EMP_MEMB_HASTA;
-				$txtCron    = '';
-				$file		= "cron_membresia.txt";
+                $ahora          = fechaNow();
+                $hasta          = $mdl->EMP_MEMB_HASTA;
+                $txtCron        = '';
+                $file		= "cron_membresia.txt";
 
-				if( $ahora > $hasta ){
-					$plan		= $mdl->MEMBRESIA_ID;
-					$idEmpresa	= $mdl->EMPRESA_ID;
-					$idEmpMem	= $mdl->EMP_MEMB_ID;
-					$existe 	= FALSE;
+                if( $ahora > $hasta ){
+                        $plan		= $mdl->MEMBRESIA_ID;
+                        $idEmpresa	= $mdl->EMPRESA_ID;
+                        $idEmpMem	= $mdl->EMP_MEMB_ID;
+                        $existe 	= FALSE;
 
-					$ci->membresia_model->updateMembresiaPorCampo('EMP_MEMB_ID',$idEmpMem,'EMP_MEMB_FLAG',FALSE);
+                        $membresiaMdl->updateMembresiaPorCampo('EMP_MEMB_ID',$idEmpMem,'EMP_MEMB_FLAG',FALSE);
 
-					$res = $ci->membresia_model->getMembresiasPlan($idEmpresa);
-					if( count($res) == 0 ){
-						instanciarPlan($idEmpresa,$ahora,1);
-					}
+                        $res = $membresiaMdl->getMembresiasPlan($idEmpresa)->getResult();
+                        if( count($res) == 0 ){
+                                instanciarPlan($idEmpresa,$ahora,1);
+                        }
 
-					$txtCron = $ahora . ' EMPRESA: ' . $idEmpresa . ' IDCAMPO: '.$idEmpMem.' PLAN: ' .$plan. "\n";
-								logCron($file,$txtCron);
-				}
+                        $txtCron = $ahora . ' EMPRESA: ' . $idEmpresa . ' IDCAMPO: '.$idEmpMem.' PLAN: ' .$plan. "\n";
+                        logCron($file,$txtCron);
+                }
         }
 }
 
@@ -178,6 +176,8 @@ if(!function_exists('updatePlanes'))
 {
         function updatePlanes($idEmpresa)
         {
+                $membresiaMdl = new MembresiaModel();
+
                 $ci = &get_instance();
                 $ci->load->model('membresia_model');
                 $planes = $ci->membresia_model->getMembresiasPlan($idEmpresa);		
@@ -210,8 +210,7 @@ if(!function_exists('insertAccion'))
 {
         function insertAccion($idEmpresa,$accion,$idGrupo,$idProducto)
         {
-                $ci = &get_instance();
-                $ci->load->model('accion_model');
+		$accionMdl = new AccionModel();
                 $date = fechaNow();
                 $txt  = null;
 
@@ -293,6 +292,11 @@ if(!function_exists('insertAccion'))
                                 break;
                 }
                 
-                $ci->accion_model->insertAccion($idEmpresa, $txt, $date);
+                $dataAccion = [
+                        "EMPRESA_ID"    => $idEmpresa,
+                        "ACCION_TXT"    => $txt,
+                        "ACCION_DATE"   => $date
+                ];
+                $accionMdl->insertAccion($dataAccion);
         }
 }

@@ -1,11 +1,16 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Cron extends CI_Controller {
+namespace App\Controllers;
+
+use App\Models\MembresiaModel;
+
+class Cron extends BaseController {
+
+	public $membresia_model;
 	
 	public function __construct()
 	{
-		parent::__construct();
+		$this->membresia_model = new MembresiaModel();
 	}
 	
 	public function index()
@@ -19,9 +24,9 @@ class Cron extends CI_Controller {
 		$txtCron	= $ahora;
         $file		= "cron_test.txt";
 		logCron($file,$txtCron);
-		$membresias = $this->membresia_model->getMembresiaEnUso();
+		$this->membresias = $this->membresia_model->getMembresiaEnUso()->getResult();
 
-		foreach( $membresias as $membresia ){
+		foreach( $this->membresias as $membresia ){
 			downPlan($membresia);
 		}
 	}

@@ -6,29 +6,39 @@ use CodeIgniter\Model;
 class ParametroModel extends Model
 {
     protected $table = 'parametros';
-    public $builder;
+    public $db;
 
     function __construct()
     {
-      $db      = \Config\Database::connect();
-      $this->builder = $db->table($this->table);
+      $this->db = \Config\Database::connect();
     }
     
     public function getParametro($id)
     {
-      $query = $this->builder->getWhere(['PARAMETRO_ID' => $id]);
-      return $query;      
+      $where = array(
+                      'PARAMETRO_ID' => $id
+                    );
+  
+      $builder = $this->db->table('parametros');
+      $builder->select('*');
+      $builder->where($where);
+      $query = $builder->get();
+  
+      return $query;    
     }
 
     public function updateParametro($iva, $zona, $transbank)
     {
-      // $array = array(
-      //                 'PARAMETRO_IVA'           => $iva,
-      //                 'PARAMETRO_ZONA_HORARIA'  => $zona,
-      //                 'PARAMETRO_TRANSBANK'     => $transbank
-      //               );
-      // $this->db->where('PARAMETRO_ID', 1);
-      // $this->db->update('parametros', $array);
+      $array = array(
+        'PARAMETRO_IVA'           => $iva,
+        'PARAMETRO_ZONA_HORARIA'  => $zona,
+        'PARAMETRO_TRANSBANK'     => $transbank
+      );
+
+      $builder = $this->db->table('parametros');
+      $builder->set($array);
+      $builder->where('PARAMETRO_ID', 1);
+      $builder->update();
     }
 	
 } 

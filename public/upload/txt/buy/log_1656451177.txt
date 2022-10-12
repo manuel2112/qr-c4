@@ -1,0 +1,105 @@
+FECHA: 2022-06-28 17:19:59
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656451177
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-28T21:19:36.812Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 17:20:20
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656451177
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-28T21:19:36.812Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 17:20:53
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656451177
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-28T21:19:36.812Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 17:22:31
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656451177
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-28T21:19:36.812Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 17:22:35
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656451177
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-28T21:19:36.812Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 17:22:46
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656451177
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-28T21:19:36.812Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 17:23:00
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656451177
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-28T21:19:36.812Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 

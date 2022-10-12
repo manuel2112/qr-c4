@@ -125,7 +125,7 @@ new Vue({
         instanciar() {
             Swal.showLoading();
             const self = this;
-            this.$http.post(base_url + 'admin/instanciar').then(function(res) {
+            this.$http.post(`${base_url}/admin/instanciar`).then(function(res) {
                 
                 self.empresas = res.data.empresas;
                 Swal.close();
@@ -152,7 +152,7 @@ new Vue({
             const titleAccion   = 'SELECCIONAR EMPRESA';
 
             const dataString = { idEmpresa: this.empresaCmb };
-            this.$http.post(base_url + 'admin/getEmpresa', dataString).then(function(res) {
+            this.$http.post(`${base_url}/admin/getEmpresa`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -197,7 +197,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(base_url + 'admin/getDatos', dataString).then(function(res) {
+            this.$http.post(`${base_url}/admin/getDatos`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -221,7 +221,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(base_url + 'admin/getPlan', dataString).then(function(res) {
+            this.$http.post(`${base_url}/admin/getPlan`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -243,7 +243,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(base_url + 'admin/getMenu',dataString).then(function(res) {
+            this.$http.post(`${base_url}/admin/getMenu`,dataString).then(function(res) {
 
                 self.grupos = res.data.grupos;
                 self.maxImgs = res.data.plan.MEMBRESIA_IMG;
@@ -262,7 +262,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(base_url + 'admin/getAcciones', dataString).then(function(res) {
+            this.$http.post(`${base_url}/admin/getAcciones`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -283,7 +283,7 @@ new Vue({
             const titleAccion   = 'ACCIONES';
             this.resetInfo();
             
-            this.$http.post(base_url + 'admin/getPlanes').then(function(res) {
+            this.$http.post(`${base_url}/admin/getPlanes`).then(function(res) {
                 
                 if ( res.data.ok ) {
                     self.planes  = res.data.planes;
@@ -321,7 +321,7 @@ new Vue({
                 preConfirm: (password) => {
 
                     const dataString = { mdl: this.mdl, password: password };
-                    return this.$http.post(base_url + 'admin/insertGift', dataString).then(res => {
+                    return this.$http.post(`${base_url}/admin/insertGift`, dataString).then(res => {
 
                         if( res.data.ok ){
                             self.swalSuccess('MEMBRESÍA', 'MEMBRESÍA OTORGADA CON ÉXITO');
@@ -359,7 +359,8 @@ new Vue({
             this.btnEditOrderGrupoLoad(true, true);
 
             const dataString    = { grupos: this.gruposEdit, idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(base_url + 'admin/orderGrupo', dataString).then(function(res) {
+            this.$http.post(`${base_url}/admin/orderGrupo`, dataString).then(function(res) {
+
                 if ( res.data.ok ) {
                     self.swalSuccess(titleAccion, textAccion)
                     self.getMenu();
@@ -369,6 +370,7 @@ new Vue({
                     self.swalError(titleAccion);
                     self.btnEditOrderGrupoLoad(false, false);
                 }
+
             },
             function() {
                 self.swalLog(titleAccion);
@@ -444,7 +446,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
             
-            this.$http.post(base_url + 'admin/insertGrupo', formData).then(function(res) {
+            this.$http.post(`${base_url}/admin/insertGrupo`, formData).then(function(res) {
 
                 self.btnInsertGrupoLoad(false, false);
                 if( res.data.ok ){
@@ -469,6 +471,10 @@ new Vue({
         cutImgTemp(e,element,bool){
             this.cutBool ? this.instJcrop(element,bool) : this.destroyJcrop() ;
             this.cutBool = !this.cutBool;
+        },
+        destroyJcrop(){
+            this.jcrop.destroy();
+            this.coords = null;
         },
         instJcrop(element,bool){
             const self  = this;
@@ -569,7 +575,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
 
-            this.$http.post(base_url + 'admin/insertProducto', formData).then(function(res) {
+            this.$http.post(`${base_url}/admin/insertProducto`, formData).then(function(res) {
                                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -649,7 +655,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
             
-            this.$http.post(base_url + 'admin/editGrupo', formData).then(function(res) {
+            this.$http.post(`${base_url}/admin/editGrupo`, formData).then(function(res) {
                 
                 self.btnEditGrupoLoad(false, false);                
                 if( res.data.ok ){
@@ -686,7 +692,7 @@ new Vue({
             Swal.showLoading();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID, productos: this.productosEdit };
-            this.$http.post(base_url + 'admin/orderProductos', dataString).then(function(res) {
+            this.$http.post(`${base_url}/admin/orderProductos`, dataString).then(function(res) {
 
                 self.btnEditOrderProductosLoad(false, false);
                 if ( res.data.ok ) {
@@ -717,7 +723,7 @@ new Vue({
             const txtText       = value.GRUPO_SHOW == 1 ? `ESTA ACCIÓN OCULTARÁ EL GRUPO ${value.GRUPO_NOMBRE}.` : `ESTA ACCIÓN MOSTRARÁ EL GRUPO ${value.GRUPO_NOMBRE}.`;
             const buttonText    = value.GRUPO_SHOW == 1 ? "SI, OCULTAR GRUPO!" : "SI, ACTIVAR GRUPO!";
             const buttonColor   = value.GRUPO_SHOW == 1 ? "#d9534f" : "#5cb85c";
-            const apiRest       = base_url + 'admin/grupoHidden';
+            const apiRest       = `${base_url}/admin/grupoHidden`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, idGrupo: value.GRUPO_ID, value: value.GRUPO_SHOW };
             const titleAccion   = 'GRUPOS';
             const textAccion    = value.GRUPO_SHOW == 0 ? "EL GRUPO HA SIDO ACTIVADO" :  "EL GRUPO HA SIDO DESACTIVADO";
@@ -731,7 +737,7 @@ new Vue({
             const txtText       = `ESTA ACCIÓN ELIMINARÁ EL GRUPO ${value.GRUPO_NOMBRE}, PRODUCTOS Y LOS VALORES ASOCIADOS`;
             const buttonText    = 'SI, ELIMINAR GRUPO';
             const buttonColor   = '#d9534f';
-            const apiRest       = base_url + 'admin/grupoDelete';
+            const apiRest       = `${base_url}/admin/grupoDelete`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, idGrupo: value.GRUPO_ID };
             const titleAccion   = 'GRUPOS';
             const textAccion    = 'EL GRUPO HA SIDO ELIMINADO EXITOSAMENTE';
@@ -746,7 +752,7 @@ new Vue({
             Swal.showLoading();
 
             let dataString = { idProducto: p.PRODUCTO_ID, limit: this.maxImgs };
-            this.$http.post( base_url + 'admin/getProducto', dataString ).then(function(res) {
+            this.$http.post( `${base_url}/admin/getProducto`, dataString ).then(function(res) {
 
                 self.productoGetVPS     = res.data.vps;
                 self.productoGetImgs    = res.data.imagenes;
@@ -787,7 +793,7 @@ new Vue({
             formData.append('idEmpresa', this.empresa.EMPRESA_ID );
             formData.append('producto', JSON.stringify(this.productosEdit) );
 
-            this.$http.post(base_url + 'admin/editProducto', formData).then(function(res) {
+            this.$http.post(`${base_url}/admin/editProducto`, formData).then(function(res) {
                 
                 self.btnEditProductoLoad(false, false);
                 if( res.data.ok ){
@@ -818,7 +824,7 @@ new Vue({
             let array               = [];
 
             let dataString = { idProducto: p.PRODUCTO_ID, limit: this.maxImgs };
-            this.$http.post( base_url + 'admin/getProducto', dataString ).then(function(res) {
+            this.$http.post(`${base_url}/admin/getProducto`, dataString ).then(function(res) {
 
                 res.data.vps.forEach(element => {
                     array.push({ nombre: element.PROVAR_NOMBRE, valor: element.PROVAR_VALOR })
@@ -839,6 +845,10 @@ new Vue({
         validarEditVPNombre(value){
             this.productoEditVPS[value].nombre = HtmlSanitizer.SanitizeHtml(this.productoEditVPS[value].nombre);
         },
+        removeEditVV(index) {
+            this.productoEditVPS.splice(index, 1);
+            this.validarEditVP();
+        },
         editVP(){
             const self          = this;
             const titleAccion   = 'VARIACIÓN DE PRECIO';
@@ -850,7 +860,7 @@ new Vue({
                                  idProducto: this.productoGet.PRODUCTO_ID, 
                                  vps: JSON.stringify(this.productoEditVPS) 
                                };
-            this.$http.post(base_url + 'admin/editVP', dataString).then(function(res) {                
+            this.$http.post(`${base_url}/admin/editVP`, dataString).then(function(res) {                
                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -878,7 +888,7 @@ new Vue({
             this.deleteImgTemp();
 
             let dataString = { idProducto: p.PRODUCTO_ID, limit: this.maxImgs };
-            this.$http.post( base_url + 'admin/getProducto', dataString ).then(function(res) {
+            this.$http.post(`${base_url}/admin/getProducto`, dataString ).then(function(res) {
 
                 self.productoEditImgs   = res.data.imagenes;
                 self.maxImgsVar         = self.maxImgs - self.productoEditImgs.length;
@@ -893,7 +903,7 @@ new Vue({
             const txtText       = 'SE ELIMINARÁ ESTA IMAGEN DE LA GALERÍA';
             const buttonText    = 'SI, ELIMINAR IMAGEN';
             const buttonColor   = "#d9534f";
-            const apiRest       = base_url + 'admin/imagenDelete';
+            const apiRest       = `${base_url}/admin/imagenDelete`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, img: img };
             const titleAccion   = 'GALERÍA DE IMÁGENES';
             const textAccion    = 'LA IMAGEN HA SIDO ELIMINADO EXITOSAMENTE';
@@ -915,7 +925,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
 
-            this.$http.post(base_url + 'admin/editGaleriaProductos', formData).then(function(res) {
+            this.$http.post(`${base_url}/admin/editGaleriaProductos`, formData).then(function(res) {
                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -936,7 +946,7 @@ new Vue({
             const txtText       = value.PRODUCTO_LINKED == 1 ? `ESTA ACCIÓN OCULTARÁ EL DETALLE DEL PRODUCTO ${value.PRODUCTO_NOMBRE}` : `ESTA ACCIÓN MOSTRARÁ EL DETALLE DEL PRODUCTO ${value.PRODUCTO_NOMBRE}`;
             const buttonText    = value.PRODUCTO_LINKED == 1 ? "SI, OCULTAR DETALLE DEL PRODUCTO!" : "SI, ACTIVAR DETALLE DEL PRODUCTO!";
             const buttonColor   = value.PRODUCTO_LINKED == 1 ? "#d9534f" : "#5cb85c";
-            const apiRest       = base_url + 'admin/productoLinkedHidden';
+            const apiRest       = `${base_url}/admin/productoLinkedHidden`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, idProducto: value.PRODUCTO_ID, value: value.PRODUCTO_LINKED };
             const titleAccion   = 'PRODUCTOS';
             const textAccion    = value.PRODUCTO_LINKED == 0 ? "SE MOSTRARÁ DETALLE DEL PRODUCTO" :  "NO SE MOSTRARÁ DETALLE DEL PRODUCTO";
@@ -950,7 +960,7 @@ new Vue({
             const txtText       = value.PRODUCTO_SHOW == 1 ? `ESTA ACCIÓN OCULTARÁ EL PRODUCTO ${value.PRODUCTO_NOMBRE}` : `ESTA ACCIÓN MOSTRARÁ EL PRODUCTO ${value.PRODUCTO_NOMBRE}`;
             const buttonText    = value.PRODUCTO_SHOW == 1 ? "SI, OCULTAR PRODUCTO!" : "SI, ACTIVAR PRODUCTO!";
             const buttonColor   = value.PRODUCTO_SHOW == 1 ? "#d9534f" : "#5cb85c";
-            const apiRest       = base_url + 'admin/productoHidden';
+            const apiRest       = `${base_url}/admin/productoHidden`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, idProducto: value.PRODUCTO_ID, value: value.PRODUCTO_SHOW };
             const titleAccion   = 'PRODUCTOS';
             const textAccion    = value.PRODUCTO_SHOW == 0 ? "EL PRODUCTO ESTÁ ACTIVO" :  "EL PRODUCTO YA NO ESTÁ ACTIVO";
@@ -964,7 +974,7 @@ new Vue({
             const txtText       = `ESTA ACCIÓN ELIMINARÁ EL PRODUCTO ${value.PRODUCTO_NOMBRE}, Y LOS VALORES ASOCIADOS`;
             const buttonText    = 'SI, ELIMINAR PRODUCTO';
             const buttonColor   = "#d9534f";
-            const apiRest       = base_url + 'admin/productoDelete';
+            const apiRest       = `${base_url}/admin/productoDelete`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, idProducto: value.PRODUCTO_ID };
             const titleAccion   = 'PRODUCTOS';
             const textAccion    = 'EL PRODUCTO HA SIDO ELIMINADO EXITOSAMENTE';

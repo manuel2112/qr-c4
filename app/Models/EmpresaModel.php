@@ -88,16 +88,17 @@ class EmpresaModel extends Model
 
   public function getEmpresas()
   {
-      $where = array(
-                      "EMPRESA_STATUS" => TRUE
-                    );
-      $query = $this->db
-                    ->select("*")
-                    ->from("empresa")
-                    ->where($where)
-                    ->order_by('EMPRESA_NOMBRE ASC')
-                    ->get();
-      return $query->result();
+    $where = array(
+                    "EMPRESA_STATUS" => TRUE
+                  );
+
+    $builder = $this->db->table('empresa');
+    $builder->select('*');
+    $builder->where($where);
+    $builder->orderBy('EMPRESA_NOMBRE', 'ASC');
+    $query = $builder->get();
+
+    return $query;
 	}
 
   public function getEmpresaSlugRow($slug)

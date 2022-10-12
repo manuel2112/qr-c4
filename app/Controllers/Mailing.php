@@ -1,30 +1,33 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Mailing extends CI_Controller {
+namespace App\Controllers;
+
+use App\Models\MailingModel;
+
+class Mailing extends BaseController {
+
+	public $mailing_model;
 	
 	public function __construct()
 	{
-		parent::__construct();
-		if (!$this->session->userdata('isadminqrsession')) {
-			$this->session->set_userdata('', current_url());
-			redirect(base_url('login'));
+		if (!session('usuario')) {
+			header('Location: '.base_url('login'));
+			exit();
 		}
-		$this->session_id 			= $this->session->userdata('idqrsession');
-		$this->session_nmb 			= $this->session->userdata('nmbqrsession');
-		$this->isadminqrsession 	= $this->session->userdata('isadminqrsession');
+
+		$this->mailing_model = new MailingModel();
 	}
 	
 	public function index()
 	{
-		$this->layout->view('index');
+        return view('mailing/index');
 	}
 
 	public function instanciar()
 	{
 		$data = array();
 
-        $data['estados']        = $this->mailing_model->getStatus();
+        $data['estados']        = $this->mailing_model->getStatus()->getResult();
 		$data['total']          = $this->mailing_model->getCorreos();
 		$data['activo']         = $this->mailing_model->getCorreoCountCampo('MAILING_ESTADO_ID',1);
 		$data['listaNegra']     = $this->mailing_model->getCorreoCountCampo('MAILING_ESTADO_ID',2);
@@ -35,7 +38,7 @@ class Mailing extends CI_Controller {
 		$data['mailrelaey']     = $this->mailing_model->getCorreoCountCampo('MAILING_MAILRELAY_STATUS',TRUE);
 		$data['nomailrelaey']   = $this->mailing_model->getCorreoCountCampo('MAILING_MAILRELAY_STATUS',FALSE);
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function insertEmail()
@@ -51,11 +54,15 @@ class Mailing extends CI_Controller {
             $data['existe'] = true;
         }else{
             $bool = esMicrosoft($email);
-            $this->mailing_model->insertEmail($email,$bool);
+			$dataEmail = array(
+                "MAILING_TXT"       => $email,
+                'MAILING_MICROSOFT' => $bool
+			  );			  
+			$this->mailing_model->insertEmail($dataEmail);
         }
         
         $data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
     
 	public function insertGrupo()
@@ -88,7 +95,11 @@ class Mailing extends CI_Controller {
             }
             if( $email != '' && filter_var($email,FILTER_VALIDATE_EMAIL) && ( $existe == 0 ) ){
                 $bool = esMicrosoft($email);
-                $this->mailing_model->insertEmail($email,$bool);
+                $dataEmail = array(
+                    "MAILING_TXT"       => $email,
+                    'MAILING_MICROSOFT' => $bool
+                  );			  
+                $this->mailing_model->insertEmail($dataEmail);
                 $countValido++;
             }
             $i++;
@@ -104,7 +115,7 @@ class Mailing extends CI_Controller {
         $data['ok']  = true;
         $data['msn'] = $msn;
 
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function searchEmail()
@@ -115,9 +126,9 @@ class Mailing extends CI_Controller {
 		$request        = json_decode(file_get_contents('php://input')); 
 		$email          = $request->email;
 
-		$correo  = $this->mailing_model->getCorreoSearchRow($email);
+		$correo  = $this->mailing_model->getCorreoSearchRow($email)->getRow();
 
-        if( !$correo->MAILING_ESTADO_ID ){
+        if( $correo && !isset($correo->MAILING_ESTADO_ID) ){
             $correo->MAILING_ESTADO_ID = '';
             $correo->MAILING_ESTADO_NMB = '';
         }
@@ -129,7 +140,7 @@ class Mailing extends CI_Controller {
         }
         
         $data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function searchGrupo()
@@ -144,14 +155,14 @@ class Mailing extends CI_Controller {
 
         $grupo = $grupo == 1 ? 0 : ($grupo - 1) * $paquete;
 
-		$correos  = $this->mailing_model->getCorreoGrupo($paquete, $grupo);
+		$correos  = $this->mailing_model->getCorreoGrupo($paquete, $grupo)->getResult();
 		if( $correos ){
             $data['existe']  = true;
             $data['correos'] = $correos;
         }
         
         $data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function getGrupoStatus()
@@ -162,11 +173,11 @@ class Mailing extends CI_Controller {
 		$request            = json_decode(file_get_contents('php://input')); 
 		$idEstado            = $request->idEstado;
 
-		$data['correos'] = $this->mailing_model->getCorreoStatus($idEstado);
-        $data['existe']  = true;        
+		$data['correos']    = $this->mailing_model->getCorreoStatus($idEstado)->getResult();
+        $data['existe']     = true;        
         $data['caption']    = nmbEstado($idEstado);
         $data['ok']         = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
     
 	public function changeState()
@@ -188,7 +199,7 @@ class Mailing extends CI_Controller {
         foreach ($textAr as $email) {
             $email  = strtolower(trim($email));
 
-            $existe = $this->mailing_model->getCorreoSearchRow($email);
+            $existe = $this->mailing_model->getCorreoSearchRow($email)->getRow();
             
             if( $existe ){
                 if( $state == 1 ){
@@ -219,7 +230,7 @@ class Mailing extends CI_Controller {
         $data['ok']  = true;
         $data['msn'] = $msn;
 
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
     public function status()
@@ -315,7 +326,7 @@ class Mailing extends CI_Controller {
         $data['time']  = fechaNow();
         $data['msn']   = $msn;
 
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 
     }
 
@@ -328,11 +339,11 @@ class Mailing extends CI_Controller {
 		$texto          = $request->texto;
 		$radio          = $request->radio;
 
-		$data['correos']    = $this->mailing_model->getCorreoSearchTxt($texto,$radio);
+		$data['correos']    = $this->mailing_model->getCorreoSearchTxt($texto,$radio)->getResult();
         $data['existe']     = true;
         
         $data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function editEmail()
@@ -344,7 +355,7 @@ class Mailing extends CI_Controller {
 
         $data['ok'] = $this->mailing_model->updateCorreoCampo($email->MAILING_ID,'MAILING_TXT',$email->MAILING_TXT);
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function deleteEmail()
@@ -356,7 +367,7 @@ class Mailing extends CI_Controller {
 
         $data['ok'] = $this->mailing_model->deleteCorreo($email->MAILING_ID);
 
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 	
 }

@@ -19,16 +19,17 @@ class AccionModel extends Model
     }
     
     public function getAccion($idEmpresa){
-            $where = array(
-                            'EMPRESA_ID' => $idEmpresa
-                        );
-            $query = $this->db
-                            ->select("*")
-                            ->from("x_accion")
-                            ->where($where)
-                            ->order_by("ACCION_DATE DESC")
-                            ->get();
-            return $query->result();
+        $where = array(
+                        'EMPRESA_ID' => $idEmpresa
+                      );
+    
+        $builder = $this->db->table('x_accion');
+        $builder->select('*');
+        $builder->where($where);
+        $builder->orderBy('ACCION_DATE', 'DESC');
+        $query = $builder->get();
+    
+        return $query;
     }
 	
 } 

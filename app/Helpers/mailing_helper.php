@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+use App\Models\MailingModel;
 
 if(!function_exists('esMicrosoft'))
 {
@@ -20,9 +22,9 @@ if(!function_exists('nmbEstado'))
 {
 	function nmbEstado($idEstado)
 	{
-        $ci = &get_instance();
-        $ci->load->model('mailing_model');
-        $estado = $ci->mailing_model->getStatusRow($idEstado);
+        $mailing_model = new MailingModel();
+        
+        $estado = $mailing_model->getStatusRow($idEstado)->getRow();
 
         return $estado->MAILING_ESTADO_NMB;
 	}

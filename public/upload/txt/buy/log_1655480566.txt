@@ -1,0 +1,15 @@
+FECHA: 2022-06-17 11:43:13
+vci: TSY
+amount: 23800
+status: AUTHORIZED
+buyOrder: 1655480566
+sessionId: sessionFacilbakPayQR
+card_number: 7763
+accountingDate: 0617
+transactionDate: 2022-06-17T15:42:47.052Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 

@@ -1,33 +1,36 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Gestion extends CI_Controller {
+namespace App\Controllers;
+
+use App\Models\ParametroModel;
+
+class Gestion extends BaseController {
+
+	public $parametro_model;
 	
 	public function __construct()
 	{
-		parent::__construct();
-		if (!$this->session->userdata('isadminqrsession')) {
-			$this->session->set_userdata('', current_url());
-			redirect(base_url('login'));
+		if (!session('usuario')) {
+			header('Location: '.base_url('login'));
+			exit();
 		}
-		$this->session_id 			= $this->session->userdata('idqrsession');
-		$this->session_nmb 			= $this->session->userdata('nmbqrsession');
-		$this->isadminqrsession 	= $this->session->userdata('isadminqrsession');
+
+		$this->parametro_model = new ParametroModel();
 	}
 	
 	public function index()
 	{
-		$this->layout->view('index');
+		return view('gestion/index');
 	}
 
 	public function instanciar()
 	{
 		$data = array();
 
-		$data['parametros']     = $this->parametro_model->getParametro();
-		$data['editParametros'] = $this->parametro_model->getParametro();
+		$data['parametros']     = $this->parametro_model->getParametro(1)->getRow();
+		$data['editParametros'] = $this->parametro_model->getParametro(1)->getRow();
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function editParametros()
@@ -44,7 +47,7 @@ class Gestion extends CI_Controller {
 		$this->parametro_model->updateParametro($PARAMETRO_IVA, $PARAMETRO_ZONA_HORARIA, $PARAMETRO_TRANSBANK);
         
         $data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 	
 }

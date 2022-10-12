@@ -1,9 +1,8 @@
 <?php 
 	$this->extend('layouts/main');
 	$session = session();
+	$this->section('content')
 ?>
-
-<?php $this->section('content') ?>
 
 <div id="index" v-cloak>
 	<div class="row">

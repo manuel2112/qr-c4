@@ -17,8 +17,7 @@ class Home extends BaseController {
 			header('Location: '.base_url('login'));
 			exit();
 		}
-
-		helper(['base','validate','fecha','log']);		
+		
 		$this->empresaMdl	= new EmpresaModel();
 		$this->membresiaMdl	= new MembresiaModel();
 

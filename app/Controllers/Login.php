@@ -7,7 +7,7 @@ use App\Models\EmpresaModel;
 
 class Login extends BaseController {
 	
-	public $ciudadMdl;
+	public $ciudad_model;
 	public $empresaMdl;
 	public $loginMdl;
 
@@ -15,7 +15,7 @@ class Login extends BaseController {
     {
 		helper(['fecha','base','form','random','email','emailBody','validate']);
 		$this->loginMdl 	= new LoginModel();
-		$this->ciudadMdl 	= new CiudadModel();
+		$this->ciudad_model 	= new CiudadModel();
 		$this->empresaMdl	= new EmpresaModel();
 		
 		//EDITAR PASSWORD ADMIN
@@ -41,7 +41,7 @@ class Login extends BaseController {
 			}
 		}
 				
-		$data['regiones'] = $this->ciudadMdl->getRegiones()->getResult();
+		$data['regiones'] = $this->ciudad_model->getRegiones()->getResult();
 		return view('login/index',$data);
 	}
 	

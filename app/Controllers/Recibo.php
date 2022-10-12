@@ -1,12 +1,12 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Recibo extends CI_Controller {
+namespace App\Controllers;
+
+class Recibo extends BaseController {
 
 	function __construct()
 	{
-		parent::__construct();
-		$this->load->library('pdf');	
+		// $this->load->library('pdf');	
 	}
 
 	public function index()
@@ -108,7 +108,6 @@ class Recibo extends CI_Controller {
 
 	public function exportFile()
 	{
-
 		$data           = array();
         $data['ok']     = false;
 		$ruta			= '';
@@ -122,7 +121,7 @@ class Recibo extends CI_Controller {
         
         $data['ruta'] = base_url($ruta);
         $data['ok']   = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 

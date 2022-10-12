@@ -1,0 +1,60 @@
+FECHA: 2022-06-28 20:05:43
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656461122
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-29T00:05:20.678Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 20:07:49
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656461122
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-29T00:05:20.678Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 20:08:18
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656461122
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-29T00:05:20.678Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-06-28 20:09:34
+vci: TSY
+amount: 119
+status: AUTHORIZED
+buyOrder: 1656461122
+sessionId: sessionFacilbakQRPay
+card_number: 7763
+accountingDate: 0628
+transactionDate: 2022-06-29T00:05:20.678Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 

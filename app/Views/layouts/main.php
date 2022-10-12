@@ -1,7 +1,7 @@
 <?php 
 	$v = time();
 	$session = session();
-	$uri = new \CodeIgniter\HTTP\URI();
+	$uri = new \CodeIgniter\HTTP\URI(uri_string());
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -44,7 +44,7 @@
 
 					<?php if( $session->get('usuario')['isadminqrsession'] ){ ?>
 
-						<a href="<?php echo base_url('admin')?>" title="ADMINISTRADOR" class="<?php echo $segmento == 'admin' ? 'active' : '' ;?>"><i class="fa fa-lock"></i> <span>ADMINISTRADOR</span></a>
+						<a href="<?php echo base_url('admin')?>" title="ADMINISTRADOR" class="<?php echo $uri->getSegment(1) == 'admin' ? 'active' : '' ;?>"><i class="fa fa-lock"></i> <span>ADMINISTRADOR</span></a>
 
 						<a href="<?php echo base_url('gestion')?>" title="GESTIÓN" class="<?php echo $segmento == 'gestion' ? 'active' : '' ;?>"><i class="fa fa-cogs"></i> <span>GESTIÓN</span></a>
 

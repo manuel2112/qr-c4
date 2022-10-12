@@ -8,8 +8,8 @@ if(!function_exists('calcularMembresia'))
 {
         function calcularMembresia($mdlPago)
         {
-                $ci = &get_instance();
-                $ci->load->model('membresia_model','empresa_model');
+                $empresa_model     = new EmpresaModel();
+                $membresia_model   = new MembresiaModel();
 
                 $idEmpresa      = $mdlPago->EMPRESA_ID;
                 $idMembresia    = $mdlPago->MEMBRESIA_ID;
@@ -17,9 +17,9 @@ if(!function_exists('calcularMembresia'))
                 $meses          = $mdlPago->PAGO_CANTIDAD;
                 $free           = isset($mdlPago->FREE) ? TRUE : FALSE;
                 
-                $ci->membresia_model->updateMembresiaDownBronce($idEmpresa);
+                $membresia_model->updateMembresiaDownBronce($idEmpresa);
 
-                $membresia      = $ci->membresia_model->getMembresiaInsertPlanRow($idEmpresa);
+                $membresia      = $membresia_model->getMembresiaInsertPlanRow($idEmpresa)->getRow();
                 $inicio         = !empty($membresia) ? $membresia->EMP_MEMB_HASTA : fechaNow();
                 
                 if( $idMembresia != 1 ){
@@ -30,8 +30,17 @@ if(!function_exists('calcularMembresia'))
                                 $end            = $attr->end;
                                 $insDate        = $attr->insDate;
                                 $inicio         = $end;
-
-                                $ci->membresia_model->insertMembresia($idEmpresa,$idPago,$idMembresia,$start,$end,$insDate,$free);
+                
+                                $data = array(
+                                        'EMPRESA_ID'		=> $idEmpresa,
+                                        'PAGO_ID'		=> $idPago,
+                                        'MEMBRESIA_ID'		=> $idMembresia,
+                                        'EMP_MEMB_INSERT'       => $start,
+                                        'EMP_MEMB_HASTA'        => $end,
+                                        'EMP_MEMB_INSERT_DATE'  => $insDate,
+                                        'EMP_MEMB_FREE'         => TRUE
+                                );
+                                $membresia_model->insertMembresia($data);
                         }
 
                 }else{
@@ -39,12 +48,23 @@ if(!function_exists('calcularMembresia'))
                         $start          = $attr->start;
                         $end            = $attr->end;
                         $insDate        = $attr->insDate;
+                
+                        $data = array(
+                                'EMPRESA_ID'		=> $idEmpresa,
+                                'PAGO_ID'		=> $idPago,
+                                'MEMBRESIA_ID'		=> $idMembresia,
+                                'EMP_MEMB_INSERT'       => $start,
+                                'EMP_MEMB_HASTA'        => $end,
+                                'EMP_MEMB_INSERT_DATE'  => $insDate,
+                                'EMP_MEMB_FREE'         => TRUE
+                        );
+                        $membresia_model->insertMembresia($data);
 
-                        $ci->membresia_model->insertMembresia($idEmpresa,$idPago,$idMembresia,$start,$end,$insDate,TRUE);
+                        $membresia_model->insertMembresia($idEmpresa,$idPago,$idMembresia,$start,$end,$insDate,TRUE);
                 }
 
-                $ci->empresa_model->updateEmpresaCampo($idEmpresa, 'EMPRESA_VISTA', TRUE);
-                $ci->empresa_model->updateEmpresaCampo($idEmpresa, 'EMPRESA_MEMBRESIA', TRUE);
+                $empresa_model->updateEmpresaCampo($idEmpresa, 'EMPRESA_VISTA', TRUE);
+                $empresa_model->updateEmpresaCampo($idEmpresa, 'EMPRESA_MEMBRESIA', TRUE);
 
         }
 }
@@ -122,7 +142,7 @@ if(!function_exists('avisoMembresia'))
                 $msn                    = '';
                 $diasAviso              = 5;
                 $membresiaActual        = $membresiaMdl->getMembresiaEmpresaEnUso($idEmpresa)->getRow();
-                $membresiasTotal        = $membresiaMdl->getMembresiasPlan($idEmpresa)->getRow();
+                $membresiasTotal        = $membresiaMdl->getMembresiasPlan($idEmpresa)->getResult();
 
                 if( $membresiaActual->MEMBRESIA_ID == 1 ){
                         $msn  = '<div class="alert alert-warning alert-dismissible fade show">';

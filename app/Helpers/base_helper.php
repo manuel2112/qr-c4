@@ -79,10 +79,10 @@ if(!function_exists('dirTxt'))
 		$whitelist = array( '127.0.0.1', '::1' );
 		
 		if ( in_array( $_SERVER['REMOTE_ADDR'], $whitelist ) ) {			
-			$var = 'upload/txt/';			
+			$var = 'public/upload/txt/';			
 		}else{
 			// $var = '/home/facilbak/public_html/app/upload/txt/';
-			$var = 'upload/txt/';
+			$var = 'public/upload/txt/';
 		}
 		return $var;
 	}

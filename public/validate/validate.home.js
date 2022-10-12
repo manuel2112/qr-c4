@@ -17,7 +17,7 @@ new Vue({
 
             this.$http.post(`${base_url}/home/instanciar`).then(function(res) {
                 
-                self.qr             = `${base_url }/public/${res.data.qr}`;
+                self.qr             = res.data.qr;
                 self.empresa        = res.data.empresa;
                 self.msnMembresia   = res.data.msnMembresia;
                 Swal.close();

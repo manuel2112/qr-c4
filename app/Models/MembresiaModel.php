@@ -9,7 +9,7 @@ class MembresiaModel extends Model
 
     function __construct()
     {
-    $this->db = \Config\Database::connect();
+        $this->db = \Config\Database::connect();
     }
     
     public function getMembresiaRow( $idEmpresa )
@@ -62,36 +62,38 @@ class MembresiaModel extends Model
     public function getMembresiasAll( $idEmpresa )
     {
         $where = array(
-                        'empresa_membresia.EMPRESA_ID'      => $idEmpresa
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_membresia")
-					    ->join('membresia', 'membresia.MEMBRESIA_ID = empresa_membresia.MEMBRESIA_ID')
-                        ->where($where)
-                        ->order_by('empresa_membresia.EMP_MEMB_ID DESC')
-                        ->get();
-        return $query->result();
+                        'empresa_membresia.EMPRESA_ID' => $idEmpresa
+                      );
+    
+        $builder = $this->db->table('empresa_membresia');
+        $builder->select('*');
+        $builder->join('membresia', 'membresia.MEMBRESIA_ID = empresa_membresia.MEMBRESIA_ID');
+        $builder->where($where);
+        $builder->orderBy('empresa_membresia.EMP_MEMB_ID', 'DESC');
+        $query = $builder->get();
+    
+        return $query;
     }
 
     public function getMembresiaInsertPlanRow( $idEmpresa )
     {
         $where = array(
                         'EMPRESA_ID'	    => $idEmpresa,
-						'EMP_MEMB_FLAG'	    => true
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_membresia")
-                        ->where($where)
-                        ->order_by('EMP_MEMB_ID DESC')
-                        ->limit(1)
-                        ->get();
-        return $query->row();
+                        'EMP_MEMB_FLAG'	    => true
+                      );
+    
+        $builder = $this->db->table('empresa_membresia');
+        $builder->select('*');
+        $builder->where($where);
+        $builder->orderBy('EMP_MEMB_ID', 'DESC');
+        $builder->limit(1);
+        $query = $builder->get();
+    
+        return $query;
     }
 	
 	public function updateMembresiaPorCampo($campoWhere,$valueWhere,$campoArr,$valueArr)
-    {        
+    {
         $builder = $this->db->table('empresa_membresia');
         $builder->set($campoArr, $valueArr);
         $builder->where($campoWhere, $valueWhere);
@@ -105,12 +107,10 @@ class MembresiaModel extends Model
                             'EMP_MEMB_FLAG'	    => TRUE,
                             'MEMBRESIA_ID'	    => 1
                         );
-		$array = array(
-                            'EMP_MEMB_FLAG' => FALSE
-					   );
-                       
-		$this->db->where($where);
-		$this->db->update('empresa_membresia', $array);
+        $builder = $this->db->table('empresa_membresia');
+        $builder->set('EMP_MEMB_FLAG', FALSE);
+        $builder->where($where);
+        $builder->update();
     }
 	
 	public function insertMembresia($data)
@@ -123,14 +123,15 @@ class MembresiaModel extends Model
     public function getMembresiaEnUso()
     {
         $where = array(
-						'EMP_MEMB_FLAG'	=> true
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_membresia")
-                        ->where($where)
-                        ->get();
-        return $query->result();
+                        'EMP_MEMB_FLAG'	=> true
+                      );
+    
+        $builder = $this->db->table('empresa_membresia');
+        $builder->select('*');
+        $builder->where($where);
+        $query = $builder->get();
+    
+        return $query;
     }
     
     public function getMembresiaEmpresaEnUso($idEmpresa)
@@ -159,14 +160,15 @@ class MembresiaModel extends Model
     {
         $where = array(
                         'MEMBRESIA_ID !='   => 1,
-						'MEMBRESIA_FLAG'    => true
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("membresia")
-                        ->where($where)
-                        ->get();
-        return $query->result();
+                        'MEMBRESIA_FLAG'    => true
+                      );
+    
+        $builder = $this->db->table('membresia');
+        $builder->select('*');
+        $builder->where($where);
+        $query = $builder->get();
+    
+        return $query;
     }
 
     public function getTipoMembresiaRow( $idMembresia )

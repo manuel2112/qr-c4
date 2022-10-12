@@ -18,7 +18,7 @@ if(!function_exists('fileUpload'))
         }
 
         if( $isGroup && $coords ){
-            $output_h =  ($orig_h * $output_w) / $orig_w;
+            $output_h =  round(($orig_h * $output_w) / $orig_w);
             
             $new_w =  $output_w;
             $new_h =  $output_h;
@@ -26,11 +26,11 @@ if(!function_exists('fileUpload'))
             $offset_x = 0;
             $offset_y = 0;
         }else{
-            $new_w =  $orig_w * $scale;
-            $new_h =  $orig_h * $scale;
+            $new_w =  round($orig_w * $scale);
+            $new_h =  round($orig_h * $scale);
             
-            $offset_x = ($output_w - $new_w) / 2;
-            $offset_y = ($output_h - $new_h) / 2;
+            $offset_x = round(($output_w - $new_w) / 2);
+            $offset_y = round(($output_h - $new_h) / 2);
         }
 
         if( $fileType == "image/jpeg" ){
@@ -45,6 +45,7 @@ if(!function_exists('fileUpload'))
 
         deleteFile($fileTemp);
         return $ruta;
+        // return $ruta;
 	}
 }
 
@@ -87,7 +88,6 @@ if(!function_exists('cutImg'))
 {
 	function cutImg($logo,$fileTemp,$fileType,$coords,$widthResize)
 	{
-        // $fileTemp = resizeImage($logo,$fileTemp,$fileType);
 
         $widthResize = $widthResize - 8;
         list($or_width, $or_height) = getimagesize($fileTemp);
@@ -98,12 +98,12 @@ if(!function_exists('cutImg'))
         $CH = ceil(($or_height * $coords->h) / $heightResize);
 
         if( $fileType == "image/jpeg" ){
-            $ruta   = createNameFile('upload/temps/', 'temp', 'jpg');
+            $ruta   = createNameFile('public/upload/temps/', 'temp', 'jpg');
             uploadJPG( $logo, $fileTemp, $ruta, 0, 0, $CX, $CY, $CW, $CH, $CW, $CH, $CW, $CH );
         }
 
         if( $fileType == "image/png" ){
-            $ruta   = createNameFile('upload/temps/', 'temp', 'png');
+            $ruta   = createNameFile('public/upload/temps/', 'temp', 'png');
             uploadPNG( $logo, $fileTemp, $ruta, 0, 0, $CX, $CY, $CW, $CH, $CW, $CH, $CW, $CH );
         }
 
@@ -122,12 +122,12 @@ if(!function_exists('resizeImage'))
         $new_height = $or_height;
 
         if( $fileType == "image/jpeg" ){
-            $ruta   = createNameFile('upload/temps/', 'resize', 'jpg');
+            $ruta   = createNameFile('public/upload/temps/', 'resize', 'jpg');
             uploadJPG( $logo, $fileTemp, $ruta, 0, 0, 0, 0, $new_width, $new_height, $or_width, $or_height, $new_width, $new_height);
         }
 
         if( $fileType == "image/png" ){
-            $ruta   = createNameFile('upload/temps/', 'resize', 'png');
+            $ruta   = createNameFile('public/upload/temps/', 'resize', 'png');
             uploadPNG( $logo, $fileTemp, $ruta, 0, 0, 0, 0, $new_width, $new_height, $or_width, $or_height, $new_width, $new_height );
         }
 

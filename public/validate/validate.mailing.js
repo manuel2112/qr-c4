@@ -59,7 +59,7 @@ new Vue({
             this.initLoading ? Swal.showLoading() : '';
             const self = this;
             
-            this.$http.post(base_url + 'mailing/instanciar').then(function(res) {
+            this.$http.post(`${base_url}/mailing/instanciar`).then(function(res) {
                 
                 self.estados                = res.data.estados;
                 self.resumen.total          = res.data.total;
@@ -106,7 +106,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'INGRESO EMAIL';
             const dataString = { email: this.emailIns };
-            await this.$http.post(base_url + 'mailing/insertEmail', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/insertEmail`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     if( res.data.existe ){
@@ -132,7 +132,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'INGRESO GRUPO';
             const dataString = { grupo: this.grupoIns };
-            await this.$http.post(base_url + 'mailing/insertGrupo', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/insertGrupo`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, res.data.msn);
@@ -146,7 +146,7 @@ new Vue({
             },
             function() {
                 self.swalLog(titleAccion);
-                console.log('Error insertEmail');
+                console.log('Error insertGrupo');
             })
         },
         async searchEmail(){
@@ -154,7 +154,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'BUSCAR EMAIL';
             const dataString = { email: this.emailIns };
-            await this.$http.post(base_url + 'mailing/searchEmail', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/searchEmail`, dataString).then(function(res) {
                 
                 if( res.data.ok ){
                     if( res.data.existe ){
@@ -182,7 +182,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'BUSCAR EMAIL';
             const dataString = { grupo: this.nmbGrupo, paquete: this.paquete };
-            await this.$http.post(base_url + 'mailing/searchGrupo', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/searchGrupo`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     if( res.data.existe ){
@@ -203,7 +203,7 @@ new Vue({
             },
             function() {
                 self.swalLog(titleAccion);
-                console.log('Error searchEmail');
+                console.log('Error searchGrupo');
             })
         },
         async changeState(){
@@ -211,7 +211,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'CAMBIAR ESTADO';
             const dataString = { grupo: this.grupoIns, state: this.state };
-            await this.$http.post(base_url + 'mailing/changeState', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/changeState`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, res.data.msn);
@@ -225,7 +225,7 @@ new Vue({
             },
             function() {
                 self.swalLog(titleAccion);
-                console.log('Error insertEmail');
+                console.log('Error changeState');
             })
         },
         async getGrupoStatus(value){
@@ -233,7 +233,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'BUSCAR GRUPO';
             const dataString = { idEstado: value };
-            await this.$http.post(base_url + 'mailing/getGrupoStatus', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/getGrupoStatus`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     if( res.data.existe ){
@@ -258,7 +258,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'BUSCAR TEXTO';
             const dataString = { texto: this.textoSearch, radio: this.textRadio };
-            await this.$http.post(base_url + 'mailing/searchTexto', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/searchTexto`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     if( res.data.existe ){
@@ -287,7 +287,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'EXPORTAR ARCHIVO';
             const dataString = { texto: this.searchResp };
-            await this.$http.post(base_url + 'recibo/exportFile', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/recibo/exportFile`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     self.btnExportLoad(false, true);
@@ -308,7 +308,7 @@ new Vue({
             const titleAccion   = 'EDITAR EMAIL';
             const textAccion    = 'EMAIL EDITADO EXITOSAMENTE';
             const dataString = { email: this.emailEdit };
-            await this.$http.post(base_url + 'mailing/editEmail', dataString).then(function(res) {
+            await this.$http.post(`${base_url}/mailing/editEmail`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     $('#modalSearchEmail').modal('hide');
@@ -380,7 +380,7 @@ new Vue({
                             Swal.showLoading()
                         }
                     })
-                    self.$http.post(base_url + 'mailing/deleteEmail', dataString).then(function(res) {
+                    self.$http.post(`${base_url}/mailing/deleteEmail`, dataString).then(function(res) {
                         
                         if ( res.data.ok ) {
                             $('#modalSearchEmail').modal('hide');

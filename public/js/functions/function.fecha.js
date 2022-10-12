@@ -30,7 +30,7 @@ new Vue({
             // console.log(this.inc);
 
             if ( this.inc > 119 ) {
-                window.location.replace(`${base_url}login`);
+                window.location.replace(`${base_url}/login`);
             }
             this.inc++;
         }

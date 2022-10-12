@@ -1,10 +1,15 @@
 <?php
+
+namespace App\Models;
+use CodeIgniter\Model;
 	
-class vista_model extends CI_Model
+class VistaModel extends Model
 {
+  public $db;
+
   function __construct()
   {
-      parent::__construct();
+    $this->db = \Config\Database::connect();
   }  
 
 	public function insertVista($idEmpresa, $date)
@@ -33,18 +38,19 @@ class vista_model extends CI_Model
   
   public function getVistaPlanActual($idEmpresa,$inicio,$fin)
   {
-        $where = array(
-                        'EMPRESA_ID'    => $idEmpresa,
-                        'VISTA_DATE >=' => $inicio,
-                        'VISTA_DATE <=' => $fin,
-					            );
-        $query = $this->db
-                        ->select("*")
-                        ->from("vista")
-                        ->where($where)
-                        ->order_by("VISTA_ID DESC")
-                        ->get();
-        return $query->result();
+    $where = array(
+                    'EMPRESA_ID'    => $idEmpresa,
+                    'VISTA_DATE >=' => $inicio,
+                    'VISTA_DATE <=' => $fin,
+                  );
+
+    $builder = $this->db->table('vista');
+    $builder->select('*');
+    $builder->where($where);
+    $builder->orderBy('VISTA_ID', 'DESC');
+    $query = $builder->get();
+
+    return $query;
   }
 	
 } 

@@ -1,30 +1,33 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+use App\Models\MembresiaModel;
+use App\Models\VistaModel;
 
 if(!function_exists('planActual'))
 {
         function planActual($idEmpresa)
         {
-            $ci = &get_instance();
-            $ci->load->model('membresia_model','vista_model');
+                $membresia_model = new MembresiaModel();
+                $vista_model 	 = new VistaModel();
 
-            $membresia  = $ci->membresia_model->getMembresiaEmpresaEnUso($idEmpresa);
-            $plan       = $membresia->MEMBRESIA_ID;
-            $inicio     = $membresia->EMP_MEMB_INSERT;
-            $fin        = $membresia->EMP_MEMB_HASTA;
-            $maxVistas  = $membresia->MEMBRESIA_VISTAS;
-            $vistas     = $ci->vista_model->getVistaPlanActual($idEmpresa,$inicio,$fin);
-            $counter    = count($vistas);
+                $membresia  = $membresia_model->getMembresiaEmpresaEnUso($idEmpresa)->getRow();
+                $plan       = $membresia->MEMBRESIA_ID;
+                $inicio     = $membresia->EMP_MEMB_INSERT;
+                $fin        = $membresia->EMP_MEMB_HASTA;
+                $maxVistas  = $membresia->MEMBRESIA_VISTAS;
+                $vistas     = $vista_model->getVistaPlanActual($idEmpresa,$inicio,$fin)->getResult();
+                $counter    = count($vistas);
 
-            $arr = array(
-                            'inicio'    => $inicio, 
-                            'fin'       => $fin, 
-                            'vistas'    => $vistas, 
-                            'counter'   => $counter, 
-                            'maximo'    => $maxVistas,
-                            'plan'      => $plan
-                        );
+                $arr = array(
+                                'inicio'    => $inicio, 
+                                'fin'       => $fin, 
+                                'vistas'    => $vistas, 
+                                'counter'   => $counter, 
+                                'maximo'    => $maxVistas,
+                                'plan'      => $plan
+                                );
 
-            return $arr;
+                return $arr;
         }
 }
 

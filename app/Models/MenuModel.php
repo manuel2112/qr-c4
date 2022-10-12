@@ -26,17 +26,18 @@ class MenuModel extends Model
 
   public function getGrupoPorEmpresa($idEmpresa)
   {
-        $where = array(
-                        "EMPRESA_ID" => $idEmpresa,
-                        "GRUPO_FLAG" => true
-                      );
-        $query = $this->db
-                        ->select("*")
-                        ->from("grupo")
-                        ->where($where)
-                      	->order_by('GRUPO_ORDEN DESC') 
-                        ->get();
-        return $query->result();  
+    $where = array(
+                    "EMPRESA_ID" => $idEmpresa,
+                    "GRUPO_FLAG" => true
+                  );
+
+    $builder = $this->db->table('grupo');
+    $builder->select('*');
+    $builder->where($where);
+    $builder->orderBy('GRUPO_ORDEN', 'DESC');
+    $query = $builder->get();
+
+    return $query;
   }
 
   public function getGrupoPorEmpresaShow($idEmpresa)
@@ -57,43 +58,37 @@ class MenuModel extends Model
 
   public function updateGrupoCampo($idGrupo, $campo, $valor)
   {
-    $array = array(
-                    $campo => $valor
-                  );
-    $this->db->where('GRUPO_ID', $idGrupo);
-    $this->db->update('grupo', $array);
+    $builder = $this->db->table('grupo');
+    $builder->set($campo, $valor);
+    $builder->where('GRUPO_ID', $idGrupo);
+    $builder->update();
   }
 
   public function getCountProductos($idEmpresa)
   {
-        $where = array(
-                        "EMPRESA_ID" => $idEmpresa,
-                        "GRUPO_FLAG" => true
-					            );
-        $query = $this->db
-                        ->select("*")
-                        ->from("grupo")
-                        ->where($where)
-                        ->get();
-        return $query->num_rows();
+    $where = array(
+                    "EMPRESA_ID" => $idEmpresa,
+                    "GRUPO_FLAG" => true
+                  );
+
+    $builder = $this->db->table('grupo');
+    $builder->select('*');
+    $builder->where($where);
+    $query = $builder->countAllResults();
+
+    return $query;
   }
 
 	/*=============================================
 	PRODUCTO
 	=============================================*/  
 
-  public function insertProducto($idGrupo,$nombre,$detalle,$descripcion,$linked,$show)
+  public function insertProducto($data)
   {
-		$data = array(
-                    'GRUPO_ID'        => $idGrupo,
-                    'PRODUCTO_NOMBRE' => $nombre,
-                    'PRODUCTO_DET'    => $detalle,
-                    'PRODUCTO_DESC'   => $descripcion,
-                    'PRODUCTO_LINKED' => $linked,
-                    'PRODUCTO_SHOW'   => $show
-                  );
-		$this->db->insert('producto', $data);
-    return $this->db->insert_id();
+    $this->db
+         ->table('producto')
+         ->insert($data);
+    return $this->db->insertID();
   }
 
   public function insertProductoInt($data)
@@ -106,17 +101,18 @@ class MenuModel extends Model
 
   public function getProductoPorGrupo($idGrupo)
   {
-        $where = array(
-                        "GRUPO_ID"      => $idGrupo,
-                        "PRODUCTO_FLAG" => true
-                      );
-        $query = $this->db
-                        ->select("*")
-                        ->from("producto")
-                        ->where($where)
-                      	->order_by('PRODUCTO_ORDEN DESC') 
-                        ->get();
-        return $query->result();  
+    $where = array(
+                    "GRUPO_ID"      => $idGrupo,
+                    "PRODUCTO_FLAG" => true
+                  );
+
+    $builder = $this->db->table('producto');
+    $builder->select('*');
+    $builder->where($where);
+    $builder->orderBy('PRODUCTO_ORDEN', 'DESC');
+    $query = $builder->get();
+
+    return $query;  
   }
 
   public function getProductoPorGrupoShow($idGrupo)
@@ -137,26 +133,21 @@ class MenuModel extends Model
 
   public function updateProductoCampo($idProducto, $campo, $valor)
   {
-    $array = array(
-                    $campo => $valor
-                  );
-    $this->db->where('PRODUCTO_ID', $idProducto);
-    $this->db->update('producto', $array);
+    $builder = $this->db->table('producto');
+    $builder->set($campo, $valor);
+    $builder->where('PRODUCTO_ID', $idProducto);
+    $builder->update();
   }
 
 	/*=============================================
 	VARIACION DE PRECIO
 	=============================================*/
 
-  public function insertVariacionProducto($idProducto,$nombre,$valor,$base)
+  public function insertVariacionProducto($data)
   {
-		$data = array(
-                    'PROVAR_NOMBRE' => $nombre,
-                    'PROVAR_VALOR'  => $valor,
-                    'PROVAR_BASE'   => $base,
-                    'PRODUCTO_ID'   => $idProducto
-                  );
-		$this->db->insert('producto_variacion', $data);
+    $this->db
+         ->table('producto_variacion')
+         ->insert($data);
   }
 
   public function insertVariacionProductoIns($data)
@@ -168,17 +159,18 @@ class MenuModel extends Model
 
   public function getVariacionPorProducto($idProducto)
   {
-        $where = array(
-                        "PRODUCTO_ID" => $idProducto,
-                        "PROVAR_FLAG" => true
-                      );
-        $query = $this->db
-                        ->select("*")
-                        ->from("producto_variacion")
-                        ->where($where)
-                      	->order_by('PROVAR_ID ASC') 
-                        ->get();
-        return $query->result();  
+    $where = array(
+                    "PRODUCTO_ID" => $idProducto,
+                    "PROVAR_FLAG" => true
+                  );
+
+    $builder = $this->db->table('producto_variacion');
+    $builder->select('*');
+    $builder->where($where);
+    $builder->orderBy('PROVAR_ID', 'ASC');
+    $query = $builder->get();
+
+    return $query; 
   }
 
   public function getValorBaseProducto($idProducto)
@@ -198,8 +190,9 @@ class MenuModel extends Model
 
   public function deleteVariacionPorProducto($idProducto)
   {
-    	$this->db->where('PRODUCTO_ID', $idProducto);
-    	$this->db->delete('producto_variacion');  
+    $builder = $this->db->table('producto_variacion');
+    $builder->where('PRODUCTO_ID', $idProducto);
+    $builder->delete(); 
   }
 
 	/*=============================================
@@ -215,27 +208,26 @@ class MenuModel extends Model
 
   public function getImgPorProducto($idProducto,$limit)
   {
-        $where = array(
-                        "PRODUCTO_ID" => $idProducto,
-                        "PROIMG_FLAG" => true
-                      );
-        $query = $this->db
-                        ->select("*")
-                        ->from("producto_imagen")
-                        ->where($where)
-                      	->order_by('PROIMG_ID ASC') 
-                      	->limit($limit) 
-                        ->get();
-        return $query->result();  
+    $where = array(
+                    "PRODUCTO_ID" => $idProducto,
+                    "PROIMG_FLAG" => true
+                  );
+
+    $builder = $this->db->table('producto_imagen');
+    $builder->select('*');
+    $builder->where($where);
+    $builder->orderBy('PROIMG_ID', 'ASC');
+    $query = $builder->get();
+
+    return $query;
   }
 
   public function updateImagenCampo($idImg, $campo, $valor)
   {
-    $array = array(
-                    $campo => $valor
-                  );
-    $this->db->where('PROIMG_ID', $idImg);
-    $this->db->update('producto_imagen', $array);
+    $builder = $this->db->table('producto_imagen');
+    $builder->set($campo, $valor);
+    $builder->where('PROIMG_ID', $idImg);
+    $builder->update();
   }
 
 } 

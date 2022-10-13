@@ -25,7 +25,7 @@ new Vue({
         instanciar() {
             this.loadInit ? Swal.showLoading() : '' ;
             const self = this;
-            this.$http.post(base_url + 'tipospago/instanciar').then(function(res) {
+            this.$http.post(`${base_url}/tipospago/instanciar`).then(function(res) {
 
                 // console.log(res.data)
                 
@@ -45,7 +45,7 @@ new Vue({
             const txtText       = value ? 'SE ACTIVARÁ LA PLATAFORMA DE PAGOS' : 'SE DESACTIVARÁ LA PLATAFORMA DE PAGOS';
             const buttonText    = value ? 'SI, ACTIVAR PAGO' : 'SI, DESACTIVAR PAGO';
             const buttonColor   = value ? '#5cb85c' : '#d9534f';
-            const apiRest       = base_url + 'tipospago/accionPago';
+            const apiRest       = `${base_url}/tipospago/accionPago`;
             const dataString    = { pago: value };
             const titleAccion   = 'PLATAFORMA DE PAGO';
             const textAccion    = value ? 'LA PLATAFORMA DE PAGOS SE HA ACTIVADO EXITOSAMENTE' : 'LA PLATAFORMA DE PAGOS SE HA DESACTIVADO EXITOSAMENTE';
@@ -59,7 +59,7 @@ new Vue({
             const txtText       = bool == 0 ? `SE ACTIVARÁ ${nmb} EN LA PLATAFORMA DE PAGO` : `SE DESACTIVARÁ ${nmb} EN LA PLATAFORMA DE PAGO`;
             const buttonText    = bool == 0 ? 'ACTIVAR' : 'DESACTIVAR';
             const buttonColor   = bool == 0 ? '#5cb85c' : '#d9534f';
-            const apiRest       = base_url + 'tipospago/accionTipo';
+            const apiRest       = `${base_url}/tipospago/accionTipo`;
             const dataString    = { id, bool, tipo };
             const titleAccion   = 'PLATAFORMA DE PAGO';
             const textAccion    = bool == 0 ? `${nmb} SE HA ACTIVADO EXITOSAMENTE` : `${nmb} SE HA DESACTIVADO EXITOSAMENTE`;
@@ -97,7 +97,7 @@ new Vue({
             this.btnInfoLoad(true, true);
             
             const dataString = { info: this.info };
-            this.$http.post(base_url + 'tipospago/accionInfo', dataString).then(function(res) {
+            this.$http.post(`${base_url}/tipospago/accionInfo`, dataString).then(function(res) {
 
                 self.btnInfoLoad(false, false);                
                 if( res.data.ok ){

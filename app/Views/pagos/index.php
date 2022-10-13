@@ -1,10 +1,16 @@
+<?php 
+	$this->extend('layouts/main');
+	$session = session();
+	$this->section('content')
+?>
+
 <div id="index" v-cloak>
 
 	<div class="row">
 		<div class="col-12">
 			<nav aria-label="breadcrumb">
 				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $this->session_nmb?></a></li>
+					<li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $session->get('usuario')['nmbqrsession'] ?></a></li>
 					<li class="breadcrumb-item active">Centro de Pagos</li>
 					<li class="breadcrumb-item"><a href="<?php echo base_url('pagos/miscompras')?>">Mis Compras</a></li>
 				</ol>
@@ -373,3 +379,5 @@
 	</div>
 
 </div>
+
+<?php $this->endSection() ?>

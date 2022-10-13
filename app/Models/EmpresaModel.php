@@ -50,16 +50,17 @@ class EmpresaModel extends Model
 
   public function updateEmpresaExisteCampo($idEmpresa,$campo,$valor)
   {
-      $where = array(
-                      'EMPRESA_ID !=' => $idEmpresa,
-                      $campo => $valor
-          );
-      $query = $this->db
-                      ->select("*")
-                      ->from("empresa")
-                      ->where($where)
-                      ->get();
-      return $query->num_rows();
+    $where = array(
+                    'EMPRESA_ID !=' => $idEmpresa,
+                    $campo => $valor
+                  );
+
+    $builder = $this->db->table('empresa');
+    $builder->select('*');
+    $builder->where($where);
+    $query = $builder->countAllResults();
+
+    return $query;
 	}
 
 	public function updateEmpresaPermiso($codigo)
@@ -132,27 +133,33 @@ class EmpresaModel extends Model
 	public function updateDatosEmpresa($idEmpresa,$nombre,$fono,$direccion,$descripcion,$comuna,$slug)
   {
     $array = array(
-            'EMPRESA_NOMBRE'		=> $nombre,
-            'EMPRESA_DIRECCION'		=> $direccion,
-            'EMPRESA_FONO'		    => $fono,
-            'EMPRESA_DESCRIPCION'   => $descripcion,
-            'CIUDAD_ID'		        => $comuna,
-            'EMPRESA_SLUG'	        => $slug
-              );
-    $this->db->where('EMPRESA_ID', $idEmpresa);
-    $this->db->update('empresa', $array);
+                    'EMPRESA_NOMBRE'		  => $nombre,
+                    'EMPRESA_DIRECCION'		=> $direccion,
+                    'EMPRESA_FONO'		    => $fono,
+                    'EMPRESA_DESCRIPCION' => $descripcion,
+                    'CIUDAD_ID'		        => $comuna,
+                    'EMPRESA_SLUG'	      => $slug
+                  );
+
+    $builder = $this->db->table('empresa');
+    $builder->set($array);
+    $builder->where('EMPRESA_ID', $idEmpresa);
+    $builder->update();
   }
 
   public function updateRedesEmpresa($idEmpresa,$whatsapp,$web,$facebook,$instagram)
   {
     $array = array(
-            'EMPRESA_WHATSAPP'  => $whatsapp,
-            'EMPRESA_WEB'       => $web,
-            'EMPRESA_FACEBOOK'  => $facebook,
-            'EMPRESA_INSTAGRAM' => $instagram,
-              );
-    $this->db->where('EMPRESA_ID', $idEmpresa);
-    $this->db->update('empresa', $array);
+                    'EMPRESA_WHATSAPP'  => $whatsapp,
+                    'EMPRESA_WEB'       => $web,
+                    'EMPRESA_FACEBOOK'  => $facebook,
+                    'EMPRESA_INSTAGRAM' => $instagram,
+                  );
+
+    $builder = $this->db->table('empresa');
+    $builder->set($array);
+    $builder->where('EMPRESA_ID', $idEmpresa);
+    $builder->update();
   }
 
   public function updateEmpresaCampo($idEmpresa, $campo, $valor)

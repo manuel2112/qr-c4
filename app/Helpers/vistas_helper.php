@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\EmpresaModel;
 use App\Models\MembresiaModel;
 use App\Models\VistaModel;
 
@@ -35,8 +36,7 @@ if(!function_exists('countVistas'))
 {
         function countVistas($idEmpresa)
         {
-                $ci = &get_instance();
-                $ci->load->model('membresia_model','vista_model','empresa_model');
+                $empresa_model 	 = new EmpresaModel();
 
                 $permiso    = true;
                 $attr       = planActual($idEmpresa);
@@ -50,7 +50,7 @@ if(!function_exists('countVistas'))
                 if( ($plan != 6) && ($plan != 7) ){
                         $isPlatino  = FALSE;
                         if( $counter > $maximo ){
-                                $ci->empresa_model->updateEmpresaCampo($idEmpresa, 'EMPRESA_VISTA', FALSE);
+                                $empresa_model->updateEmpresaCampo($idEmpresa, 'EMPRESA_VISTA', FALSE);
                                 $permiso = 0;
                         }
                 }

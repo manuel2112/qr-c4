@@ -1,8 +1,14 @@
+<?php 
+	$this->extend('layouts/main');
+	$session = session();
+	$this->section('content')
+?>
+
 <div class="row">
 	<div class="col-12">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $this->session_nmb?></a></li>
+                <li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $session->get('usuario')['nmbqrsession'] ?></a></li>
                 <li class="breadcrumb-item active">Empresa</li>
 				
 				<li class="ml-auto"><a href="<?php echo base_url('empresa/help')?>" class="btn btn-outline-warning" target="_blank"><i class="fas fa-question"></i></a></li>
@@ -16,7 +22,7 @@
 	<div class="row mt-2">
 		
 		<div class="col-12 text-center">
-			<img v-if=" empresa.EMPRESA_LOGOTIPO " :src=" '<?php echo base_url()?>' + empresa.EMPRESA_LOGOTIPO" class="img-thumbnail logo-perfil" width="auto">
+			<img v-if=" empresa.EMPRESA_LOGOTIPO " :src=" '<?php echo base_url()?>/' + empresa.EMPRESA_LOGOTIPO" class="img-thumbnail logo-perfil" width="auto">
 			<img v-else src="<?php echo base_url()?>/public/images/default.png" class="img-thumbnail" width="auto">	
 		</div>
 
@@ -832,3 +838,5 @@
 	</div>	
 
 </div><!-- FIN APP -->
+
+<?php $this->endSection() ?>

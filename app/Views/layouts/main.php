@@ -90,7 +90,7 @@
   
 
 	<script type="text/javascript">
-		var base_url		= '<?php echo base_url();?>';
+		var base_url		= '<?php echo base_url();?>/';
 		Vue.prototype.$http = axios
 	</script>
 	<script src="<?php echo base_url('public/js/jquery.min.js')?>"></script>

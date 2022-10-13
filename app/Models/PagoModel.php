@@ -1,11 +1,16 @@
 <?php
+
+namespace App\Models;
+use CodeIgniter\Model;
 	
-class pago_model extends CI_Model
+class PagoModel extends Model
 {
-    function __construct()
-    {
-        parent::__construct();
-    }
+	public $db;
+  
+	function __construct()
+	{
+	  $this->db = \Config\Database::connect();
+	}
 	
 	public function insertPago($idEmpresa,$orden,$token,$idMembresia,$cantidad,$neto,$iva,$total,$date)
     {

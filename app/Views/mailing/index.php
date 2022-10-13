@@ -189,6 +189,10 @@
 
   <button type="button" class="btn btn-primary btn-block" @click="executeAutomated">AUTOMATIZAR</button>
 
+  <div class="progress mt-5" style="height: 30px;" v-if="isInitAutomated">
+    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" id="progress-bar" aria-valuemin="0" aria-valuemax="100"></div>
+  </div>
+
   <div v-if="msnAutomated">
     <div class="alert alert-success mt-4" v-html="msnAutomated" role="alert"></div>
     <button type="button" class="btn btn-danger btn-block" @click="stopExecuteAutomated">DETENER</button>

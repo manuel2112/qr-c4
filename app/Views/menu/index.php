@@ -1,10 +1,16 @@
+<?php 
+	$this->extend('layouts/main');
+	$session = session();
+	$this->section('content')
+?>
+
 <div id="app" v-cloak>
 
 	<div class="row">
 		<div class="col-12">
 			<nav aria-label="breadcrumb">
 				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $this->session_nmb?></a></li>
+					<li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $session->get('usuario')['nmbqrsession'] ?></a></li>
 					<li class="breadcrumb-item active">Menú</li>
 					
 					<li class="ml-auto"><a href="<?php echo base_url('menu/help')?>" class="btn btn-outline-warning" target="_blank"><i class="fas fa-question"></i></a></li>
@@ -586,7 +592,7 @@
 
 							<div class="row img-productos">
 								<div class="img-productos-box" v-for=" img in productoGetImgs ">
-									<img v-if=" img.PROIMG_RUTA " :src=" '<?php echo base_url()?>' + img.PROIMG_RUTA" class="img-thumbnail">									
+									<img v-if=" img.PROIMG_RUTA " :src=" '<?php echo base_url()?>/' + img.PROIMG_RUTA" class="img-thumbnail">									
 								</div>
 							</div>
 
@@ -1378,7 +1384,7 @@
 
 					<div class="row img-productos">
 						<div class="img-productos-box" v-for=" img in productoEditImgs ">
-							<img v-if=" img.PROIMG_RUTA " :src=" '<?php echo base_url()?>' + img.PROIMG_RUTA" class="img-thumbnail"> <br>
+							<img v-if=" img.PROIMG_RUTA " :src=" '<?php echo base_url()?>/' + img.PROIMG_RUTA" class="img-thumbnail"> <br>
 							<div class="text-center">
 								<button 
 									type="button" 
@@ -1480,3 +1486,5 @@
 	</div>	
 
 </div><!-- FIN app -->
+
+<?php $this->endSection() ?>

@@ -22,6 +22,8 @@ new Vue({
         textRadio: '',
         msnAutomated:'',
         actionAutomated:'',
+        initLoadAutomated:'',
+        isInitAutomated: false,
         btnEmail: {
             txt: '<i class="fas fa-sync-alt"></i> INGRESAR EMAIL',
             disabled: true
@@ -324,17 +326,33 @@ new Vue({
                 console.log('Error editEmailProcess');
             })
         },
+        loadingInitAutomated(segundos){
+            this.isInitAutomated = true;
+            let i = 1;
+            let countdown = segundos;
+            let width = 0;
+            this.initLoadAutomated = setInterval( () => {
+                width = (100 * ++i) / segundos;
+                $("#progress-bar").css("width", `${width}%`);
+                $("#progress-bar").text( `INICIANDO EN ${countdown--} SEGUNDOS` );
+            }, 1000);
+        },
         executeAutomated(){
-            this.actionAutomated = setInterval(this.automatedProcess, 120000);
-            console.log('INICIALIZADO...');
+            const segundos  = 120;
+            const timer     = segundos * 1000;
+            this.actionAutomated = setInterval(this.automatedProcess, timer);
+            this.loadingInitAutomated(segundos - 2);
         },
         stopExecuteAutomated(){
             clearInterval(this.actionAutomated);
             console.log('FINALIZADO...')
         },
         async automatedProcess(){
+
+            this.isInitAutomated = false;
+            clearInterval(this.initLoadAutomated);
             
-            let timer = 0;
+            let timer = 1;
             Swal.fire({
                 title: 'EN PROCESO...',
                 html: '<b></b> SEGUNDOS PROCESADOS.',
@@ -348,13 +366,15 @@ new Vue({
             })
 
             const self = this;
-            await this.$http.post(base_url + 'mailing/automated').then(function(res) {
+            await this.$http.post(`${base_url}/mailing/automated`).then(function(res) {
+                
                 self.msnAutomated = res.data.msn;
                 self.instanciar();
                 console.log(res.data.fin,res.data.time);
                 console.log('ERROR',res.data.error);
                 !res.data.fin ? self.stopExecuteAutomated() : '';
                 Swal.close();
+
             },
             function() {
                 self.swalLog('Automated Process');

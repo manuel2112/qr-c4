@@ -1,28 +1,37 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Menu extends CI_Controller {
+namespace App\Controllers;
+
+use App\Models\MembresiaModel;
+use App\Models\MenuModel;
+
+class Menu extends BaseController {
+
+	public $menu_model;
+	public $membresia_model;
 	
 	public function __construct()
 	{
-		parent::__construct();
-		if (!$this->session->userdata('idqrsession')) {
-			$this->session->set_userdata('', current_url());
-			redirect(base_url('login'));
+		if (!session('usuario')) {
+			header('Location: '.base_url('login'));
+			exit();
 		}
-		$this->session_id 			= $this->session->userdata('idqrsession');
-		$this->session_nmb 			= $this->session->userdata('nmbqrsession');
-		$this->isadminqrsession 	= $this->session->userdata('isadminqrsession');
+
+		$this->menu_model 		= new MenuModel();
+		$this->membresia_model 	= new MembresiaModel();
+
+		$session = session();
+		$this->session_id 		= $session->get('usuario')['idqrsession'];
 	}
 	
 	public function index()
 	{
 		if( !tieneMembresia($this->session_id) ){
-			$this->session->set_flashdata('sinMembresia',true);
-			redirect(base_url('pagos'));
+			session()->setFlashdata('sinMembresia', true);
+			return redirect()->to('pagos'); 
 		}
 
-		$this->layout->view('index');
+		return view('menu/index');
 	}
 
 	public function instanciar()
@@ -31,13 +40,13 @@ class Menu extends CI_Controller {
 		$arreglo 	= array();
 		$idEmpresa	= $this->session_id;
 
-		$grupos 		= $this->menu_model->getGrupoPorEmpresa($idEmpresa);
-		$data['plan'] 	= $this->membresia_model->getMembresiaEmpresaEnUso($idEmpresa);
+		$grupos 		= $this->menu_model->getGrupoPorEmpresa($idEmpresa)->getResult();
+		$data['plan'] 	= $this->membresia_model->getMembresiaEmpresaEnUso($idEmpresa)->getRow();
 
 		$i = 0;
 		foreach( $grupos as $grupo ){
 			$arreglo[$i]['GRUPO'] = $grupo;
-			$productos = $this->menu_model->getProductoPorGrupo($grupo->GRUPO_ID);
+			$productos = $this->menu_model->getProductoPorGrupo($grupo->GRUPO_ID)->getResult();
 			$arreglo[$i]['COUNT_PRODUCTOS'] = count($productos);
 
 			foreach( $productos as $producto ){
@@ -47,7 +56,7 @@ class Menu extends CI_Controller {
 		}
 
 		$data['grupos'] = $arreglo;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function insertGrupo()
@@ -57,25 +66,30 @@ class Menu extends CI_Controller {
 		$imgRuta	= null;
 		$data['ok'] = false;
 
-        $grupo    		= $this->input->post("grupo",true);
-        $widthResize	= $this->input->post("widthResize",true);
-        $coords			= json_decode($this->input->post("coords",true));
+        $grupo    		= $_POST["grupo"];
+        $widthResize	= $_POST["widthResize"];
+        $coords			= json_decode($_POST["coords"]);
 	
 		//VALIDAR IMAGEN
 		if( isset($_FILES["imagen"]["tmp_name"]) ){
 			$imgType 	= $_FILES['imagen']['type'];
 			$imgTemp 	= $_FILES['imagen']['tmp_name'];
-			$directorio = "upload/empresas/".$idEmpresa."/grupo";
+			$directorio = "public/upload/empresas/".$idEmpresa."/grupo";
 			$prefijo	= "grupo";
 			$imgRuta 	= fileUpload($imgTemp,$imgType,$idEmpresa,$directorio,$prefijo,false,$coords,$widthResize,TRUE);
 		}
 
 		//INSERT GRUPO
-		$idGrupo = $this->menu_model->insertGrupo($idEmpresa,$grupo,$imgRuta);
+		$dataGrupo = array(
+			'GRUPO_NOMBRE'	=> $grupo,
+			'GRUPO_IMG'	    => $imgRuta,
+			'EMPRESA_ID'    => $idEmpresa
+		  );		  
+		$idGrupo = $this->menu_model->insertGrupo($dataGrupo);
 
 		insertAccion($idEmpresa, 7, $idGrupo, null);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function editGrupo()
@@ -84,10 +98,10 @@ class Menu extends CI_Controller {
 		$idEmpresa	= $this->session_id;
 		$imgRuta	= null;
 		$data['ok'] = false;
-
-        $grupo    		= json_decode(stripslashes($this->input->post("grupo",true)));
-        $widthResize	= $this->input->post("widthResize",true);
-        $coords			= json_decode($this->input->post("coords",true));
+        
+        $grupo    		= json_decode(stripslashes($_POST["grupo"]));
+        $widthResize	= $_POST["widthResize"];
+        $coords			= json_decode($_POST["coords"]);
 
 		$idGrupo	= $grupo->GRUPO_ID;
 		$nmbGrupo	= $grupo->GRUPO_NOMBRE_EDIT;
@@ -97,14 +111,14 @@ class Menu extends CI_Controller {
 
 		if( $grupo->GRUPO_IMG_EDIT == '' ){
 			$this->menu_model->updateGrupoCampo($idGrupo, 'GRUPO_IMG', $imgRuta);
-			deleteFile($grupo->GRUPO_IMG);
+			$grupo->GRUPO_IMG ? deleteFile($grupo->GRUPO_IMG) : '';
 		}
 	
 		//INSERT IMAGEN		
 		if( isset($_FILES["imagen"]["tmp_name"]) ){
 			$imgType 	= $_FILES['imagen']['type'];
 			$imgTemp 	= $_FILES['imagen']['tmp_name'];
-			$directorio = "upload/empresas/".$idEmpresa."/grupo";
+			$directorio = "public/upload/empresas/".$idEmpresa."/grupo";
 			$prefijo	= "grupo";
 			$imgRuta 	= fileUpload($imgTemp,$imgType,$idEmpresa,$directorio,$prefijo,false,$coords,$widthResize,TRUE);
 			if( $imgRuta != '' ){
@@ -114,7 +128,7 @@ class Menu extends CI_Controller {
 
 		insertAccion($idEmpresa, 8, $idGrupo, null);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 	
 	public function orderGrupo()
@@ -133,7 +147,7 @@ class Menu extends CI_Controller {
 		
 		insertAccion($idEmpresa, 9, null, null);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function grupoHidden()
@@ -151,7 +165,7 @@ class Menu extends CI_Controller {
 
 		insertAccion($idEmpresa, 10, $idGrupo, null);		
 		$data['ok'] = true;		
-		echo json_encode($data);		
+		return $this->response->setJSON($data);		
 	}
 
 	public function grupoDelete()
@@ -167,7 +181,7 @@ class Menu extends CI_Controller {
 
 		insertAccion($idEmpresa, 11, $idGrupo, null);
 		$data['ok'] = true;		
-		echo json_encode($data);		
+		return $this->response->setJSON($data);		
 	}
 
 	public function insertProducto()
@@ -176,24 +190,38 @@ class Menu extends CI_Controller {
 		$data['ok'] = false;
 
 		$idEmpresa		= $this->session_id;
-        $idGrupo    	= $this->input->post("idGrupo",true);
-        $producto  		= json_decode($this->input->post("producto",false));
-        $vp				= json_decode($this->input->post("vp",false));
-        $opt			= json_decode($this->input->post("opt",true));
+        $idGrupo    	= $_POST['idGrupo'];
+        $producto  		= json_decode($_POST['producto']);
+        $vp				= json_decode($_POST['vp']);
+        $opt			= json_decode($_POST['opt']);
         $nombre    		= $producto->nombre ? $producto->nombre : null;
         $detalle    	= $producto->detalle ? $producto->detalle : null;
         $descripcion	= $producto->descripcion ? $producto->descripcion : null;
-        $widthResize	= $this->input->post("widthResize",true);
-        $coords			= json_decode($this->input->post("coords",true));
+        $widthResize	= $_POST['widthResize'];
+        $coords			= json_decode($_POST['coords']);
 
-		//INSERT GRUPO
-		$idProducto = $this->menu_model->insertProducto($idGrupo,$nombre,$detalle,$descripcion,$opt->linked,$opt->show);
+		//INSERT PRODUCTO
+		$dataProducto = array(
+			'GRUPO_ID'        => $idGrupo,
+			'PRODUCTO_NOMBRE' => $nombre,
+			'PRODUCTO_DET'    => $detalle,
+			'PRODUCTO_DESC'   => $descripcion,
+			'PRODUCTO_LINKED' => $opt->linked,
+			'PRODUCTO_SHOW'   => $opt->show
+		  );		  
+		$idProducto = $this->menu_model->insertProducto($dataProducto);
 
 		//INSERT PRECIO VARIABLE
 		$base = true;
 		foreach( $vp as $v ){
 			$nmbProducto = $v->nombre ? $v->nombre : null;
-			$this->menu_model->insertVariacionProducto($idProducto,$nmbProducto,$v->valor,$base);			
+			$dataVP = array(
+				'PROVAR_NOMBRE' => $nmbProducto,
+				'PROVAR_VALOR'  => $v->valor,
+				'PROVAR_BASE'   => $base,
+				'PRODUCTO_ID'   => $idProducto
+			  );		  
+			$this->menu_model->insertVariacionProducto($dataVP);			
 			$base = false;
 		}
 	
@@ -201,17 +229,21 @@ class Menu extends CI_Controller {
 		if( isset($_FILES["imagen"]["tmp_name"]) ){
 			$imgType 	= $_FILES['imagen']['type'];
 			$imgTemp 	= $_FILES['imagen']['tmp_name'];
-			$directorio = "upload/empresas/".$idEmpresa."/productos/".$idProducto;
+			$directorio = "public/upload/empresas/".$idEmpresa."/productos/".$idProducto;
 			$prefijo	= "producto";
 			$imgRuta 	= fileUpload($imgTemp,$imgType,$idEmpresa,$directorio,$prefijo,false,$coords,$widthResize);
 			if( $imgRuta != '' ){
-				$this->menu_model->insertProductoImg($idProducto,$imgRuta);
+				$dataImagen = array(
+					'PRODUCTO_ID' => $idProducto,
+					'PROIMG_RUTA' => $imgRuta
+				  );
+				$this->menu_model->insertProductoImg($dataImagen);
 			}			
 		}
 
 		insertAccion($idEmpresa, 12, null, $idProducto);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 	
 	public function orderProductos()
@@ -230,7 +262,7 @@ class Menu extends CI_Controller {
 	
 		insertAccion($idEmpresa, 13, null, null);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function editProducto()
@@ -239,7 +271,7 @@ class Menu extends CI_Controller {
 		$data['ok'] = false;
 		$idEmpresa	= $this->session_id;
 		
-        $producto	= json_decode($this->input->post("producto",FALSE));
+        $producto	= json_decode($_POST["producto"]);
 		$idProducto = $producto->PRODUCTO_ID;
         $detalle	= $producto->PRODUCTO_DET ? $producto->PRODUCTO_DET : null;
         $desc		= $producto->PRODUCTO_DESC ? $producto->PRODUCTO_DESC : null;
@@ -251,7 +283,7 @@ class Menu extends CI_Controller {
 
 		insertAccion($idEmpresa, 14, null, $idProducto);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function productoHidden()
@@ -269,7 +301,7 @@ class Menu extends CI_Controller {
 		
 		insertAccion($idEmpresa, 15, null, $idProducto);
 		$data['ok'] = true;		
-		echo json_encode($data);		
+		return $this->response->setJSON($data);		
 	}
 	
 	public function productoLinkedHidden()
@@ -287,7 +319,7 @@ class Menu extends CI_Controller {
 		
 		insertAccion($idEmpresa, 16, null, $idProducto);
 		$data['ok'] = true;		
-		echo json_encode($data);		
+		return $this->response->setJSON($data);		
 	}
 
 	public function productoDelete()
@@ -303,7 +335,7 @@ class Menu extends CI_Controller {
 
 		insertAccion($idEmpresa, 17, null, $idProducto);
 		$data['ok'] = true;		
-		echo json_encode($data);		
+		return $this->response->setJSON($data);		
 	}
 
 	public function getProducto()
@@ -315,10 +347,10 @@ class Menu extends CI_Controller {
 		$idProducto	= trim($request->idProducto);
 		$limit		= trim($request->limit);
 
-		$data['vps']		= $this->menu_model->getVariacionPorProducto($idProducto);
-		$data['imagenes']	= $this->menu_model->getImgPorProducto($idProducto,$limit);
+		$data['vps']		= $this->menu_model->getVariacionPorProducto($idProducto)->getResult();
+		$data['imagenes']	= $this->menu_model->getImgPorProducto($idProducto,$limit)->getResult();
 		
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function editVP()
@@ -339,10 +371,22 @@ class Menu extends CI_Controller {
 		foreach( $vps as $v ){
 			if( $base ){
 				$nmbProducto = $v->nombre ? $v->nombre : null;
-				$this->menu_model->insertVariacionProducto($idProducto,$nmbProducto,$v->valor,$base);
+				$dataVP = array(
+					'PROVAR_NOMBRE' => $nmbProducto,
+					'PROVAR_VALOR'  => $v->valor,
+					'PROVAR_BASE'   => $base,
+					'PRODUCTO_ID'   => $idProducto
+				  );		  
+				$this->menu_model->insertVariacionProducto($dataVP);
 			}else{
 				if( $v->nombre && $v->valor ){
-					$this->menu_model->insertVariacionProducto($idProducto,$v->nombre,$v->valor,$base);
+					$dataVP = array(
+						'PROVAR_NOMBRE' => $v->nombre,
+						'PROVAR_VALOR'  => $v->valor,
+						'PROVAR_BASE'   => $base,
+						'PRODUCTO_ID'   => $idProducto
+					);		  
+					$this->menu_model->insertVariacionProducto($dataVP);
 				}
 			}			
 			$base = false;
@@ -350,7 +394,7 @@ class Menu extends CI_Controller {
 
 		insertAccion($idEmpresa, 18, null, $idProducto);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function imagenDelete()
@@ -367,7 +411,7 @@ class Menu extends CI_Controller {
 
 		insertAccion($idEmpresa, 19, null, null);
 		$data['ok'] = true;
-		echo json_encode($data);
+		return $this->response->setJSON($data);
 	}
 
 	public function editGaleriaProductos()
@@ -376,25 +420,29 @@ class Menu extends CI_Controller {
 		$data['ok'] = false;
 		
 		$idEmpresa		= $this->session_id;
-        $idProducto		= $this->input->post("idProducto",true);
-        $widthResize	= $this->input->post("widthResize",true);
-        $coords			= json_decode($this->input->post("coords",true));
+        $idProducto		= $_POST["idProducto"];
+        $widthResize	= $_POST["widthResize"];
+        $coords			= json_decode($_POST["coords"]);
 
 		//INSERTAR IMAGEN
 		if( isset($_FILES["imagen"]["tmp_name"]) ){
 			$imgType 	= $_FILES['imagen']['type'];
 			$imgTemp 	= $_FILES['imagen']['tmp_name'];
-			$directorio = "upload/empresas/".$idEmpresa."/productos/".$idProducto;
+			$directorio = "public/upload/empresas/".$idEmpresa."/productos/".$idProducto;
 			$prefijo	= "producto";
 			$imgRuta 	= fileUpload($imgTemp,$imgType,$idEmpresa,$directorio,$prefijo,false,$coords,$widthResize);
 			if( $imgRuta != '' ){
-				$this->menu_model->insertProductoImg($idProducto,$imgRuta);
+				$dataImagen = array(
+					'PRODUCTO_ID' => $idProducto,
+					'PROIMG_RUTA' => $imgRuta
+				  );
+				$this->menu_model->insertProductoImg($dataImagen);
 			}
 		}
 
 		insertAccion($idEmpresa, 20, null, $idProducto);
 		$data['ok'] = true;
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	/*=============================================

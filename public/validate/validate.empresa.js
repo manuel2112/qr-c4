@@ -98,7 +98,7 @@ new Vue({
         instanciar() {
             this.loadInit ? Swal.showLoading() : '' ;
             const self = this;
-            this.$http.post(base_url + 'empresa/instanciar').then(function(res) {
+            this.$http.post(`${base_url}/empresa/instanciar`).then(function(res) {
                 
                 self.empresa                = res.data.empresa;
                 self.txtIngresarEditarLogo  = self.empresa.EMPRESA_LOGOTIPO ? 'EDITAR' : 'INGRESAR' ;
@@ -188,7 +188,7 @@ new Vue({
             this.dsbCiudad = true;
 
             const dataString = { region: this.region };
-            this.$http.post(base_url + 'geo/ciudadPorRegion', dataString).then(function(res) {
+            this.$http.post(`${base_url}/geo/ciudadPorRegion`, dataString).then(function(res) {
 
                 self.ciudades = res.data.ciudades;
                 self.dsbCiudad = self.region != '' ? false : true;
@@ -216,7 +216,7 @@ new Vue({
                                  comuna: this.empresa.CIUDAD_ID, 
                                  nuevaCiudad: this.ciudad,
                                  descripcion: this.empresa.EMPRESA_DESCRIPCION };
-            this.$http.post(base_url + 'empresa/editDatos', dataString).then(function(res) {
+            this.$http.post(`${base_url}/empresa/editDatos`, dataString).then(function(res) {
 
                 self.btnDatosLoad(false, false);                
                 if( res.data.ok ){
@@ -286,7 +286,7 @@ new Vue({
             formData.append('imagen', this.imgTemp );
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
-            this.$http.post(base_url + 'empresa/uploadLogo', formData ).then(function(res) {
+            this.$http.post(`${base_url}/empresa/uploadLogo`, formData ).then(function(res) {
                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -324,7 +324,7 @@ new Vue({
                                  web: this.editEmpresa.EMPRESA_WEB,
                                  facebook: this.editEmpresa.EMPRESA_FACEBOOK,
                                  instagram: this.editEmpresa.EMPRESA_INSTAGRAM };
-            this.$http.post(base_url + 'empresa/editRedes', dataString).then(function(res) {
+            this.$http.post(`${base_url}/empresa/editRedes`, dataString).then(function(res) {
 
                 self.btnRRSSLoad(false, false);                
                 if( res.data.ok ){
@@ -407,7 +407,7 @@ new Vue({
                                  actual: this.editPass.actual,
                                  nueva: this.editPass.nueva,
                                  repetir: this.editPass.repetir};
-            this.$http.post(base_url + 'empresa/editPass', dataString).then(function(res) {
+            this.$http.post(`${base_url}/empresa/editPass`, dataString).then(function(res) {
 
                 self.btnPassLoad(false, false);                
                 if( res.data.error != '' ){
@@ -432,7 +432,7 @@ new Vue({
             const txtText       = 'SE ELIMINARÁ EL LOGOTIPO';
             const buttonText    = 'SI, ELIMINAR LOGOTIPO';
             const buttonColor   = "#d9534f";
-            const apiRest       = base_url + 'empresa/deleteLogo';
+            const apiRest       = `${base_url}/empresa/deleteLogo`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID };
             const titleAccion   = 'LOGOTIPO';
             const textAccion    = 'EL LOGOTIPO HA SIDO ELIMINADO EXITOSAMENTE';
@@ -445,7 +445,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'VISTAS MENSUALES';
 
-            this.$http.post(base_url + 'empresa/getVistas').then(function(res) {
+            this.$http.post(`${base_url}/empresa/getVistas`).then(function(res) {
                 
                 if( res.data.ok ){
                     self.resVistas = res.data.vistas;

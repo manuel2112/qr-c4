@@ -1,23 +1,32 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Tipospago extends CI_Controller {
+namespace App\Controllers;
+
+use App\Models\EmpresaModel;
+use App\Models\TipopagoModel;
+
+class Tipospago extends BaseController {
+
+	public $tipopago_model;
+	public $empresa_model;
 	
 	public function __construct()
 	{
-		parent::__construct();
-		if (!$this->session->userdata('idqrsession')) {
-			$this->session->set_userdata('', current_url());
-			redirect(base_url('login'));
+		if (!session('usuario')) {
+			header('Location: '.base_url('login'));
+			exit();
 		}
-		$this->session_id 			= $this->session->userdata('idqrsession');
-		$this->session_nmb 			= $this->session->userdata('nmbqrsession');
-		$this->isadminqrsession 	= $this->session->userdata('isadminqrsession');
+
+		$this->tipopago_model 	= new TipopagoModel();
+		$this->empresa_model 	= new EmpresaModel();
+
+		$session = session();
+		$this->session_id 		= $session->get('usuario')['idqrsession'];
 	}
 	
 	public function index()
 	{
-		$this->layout->view('index');
+		return view('tipospago/index');
 	}
 
 	public function instanciar()
@@ -26,25 +35,33 @@ class Tipospago extends CI_Controller {
         $idEmpresa	= $this->session_id;
 
         //INSTANCIAR VALORES
-        $existe = $this->tipopago_model->getTipoEntregaEmpresa($idEmpresa);
+        $existe = $this->tipopago_model->getTipoEntregaEmpresa($idEmpresa)->getResult();
         if( !$existe ){
-            $tiposEntrega   = $this->tipopago_model->getTipoEntrega();
-            $tiposPago      = $this->tipopago_model->getTipoPago();
+            $tiposEntrega   = $this->tipopago_model->getTipoEntrega()->getResult;
+            $tiposPago      = $this->tipopago_model->getTipoPago()->getResult();
 
             foreach( $tiposEntrega as $tipo ){
-                $this->tipopago_model->insertTipoEntrega($idEmpresa, $tipo->TIPO_ENTREGA_ID);
+				$dataEntrega = array(
+					"EMPRESA_ID"        => $idEmpresa,
+					"TIPO_ENTREGA_ID"   => $tipo->TIPO_ENTREGA_ID
+				  );
+				$this->tipopago_model->insertTipoEntrega($dataEntrega);
             }
             foreach( $tiposPago as $tipo ){
-                $this->tipopago_model->insertTipoPago($idEmpresa, $tipo->TIPO_PAGO_ID);
+				$dataPago = array(
+					"EMPRESA_ID"    => $idEmpresa,
+					"TIPO_PAGO_ID"  => $tipo->TIPO_PAGO_ID
+				  );
+				$this->tipopago_model->insertTipoPago($dataPago);
             }
         }
 
-		$empresa = $this->empresa_model->getEmpresaRow($idEmpresa);
+		$empresa = $this->empresa_model->getEmpresaRow($idEmpresa)->getRow();
 		$data['empresaPago'] 	= $empresa->EMPRESA_PAGO == 1 ? TRUE : FALSE;
-		$data['tiposEntrega'] 	= $this->tipopago_model->getTipoEntregaEmpresa($idEmpresa);
-		$data['tiposPago'] 		= $this->tipopago_model->getTipoPagoEmpresa($idEmpresa);
+		$data['tiposEntrega'] 	= $this->tipopago_model->getTipoEntregaEmpresa($idEmpresa)->getResult();
+		$data['tiposPago'] 		= $this->tipopago_model->getTipoPagoEmpresa($idEmpresa)->getResult();
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function accionPago()
@@ -62,7 +79,7 @@ class Tipospago extends CI_Controller {
 		insertAccion($idEmpresa, $accion, null, null);
 
 		$data['ok'] = true;
-		echo json_encode($data);
+		return $this->response->setJSON($data);
 	}
 
 	public function accionTipo()
@@ -85,7 +102,7 @@ class Tipospago extends CI_Controller {
 		insertAccion($idEmpresa, 24, null, null);
 
 		$data['ok'] = true;
-		echo json_encode($data);
+		return $this->response->setJSON($data);
 	}
 
 	public function accionInfo()
@@ -108,7 +125,7 @@ class Tipospago extends CI_Controller {
 		insertAccion($idEmpresa, 25, null, null);
 
 		$data['ok'] = true;
-		echo json_encode($data);
+		return $this->response->setJSON($data);
 	}
 	
 }

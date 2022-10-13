@@ -22,41 +22,58 @@ if(!function_exists('create_qr'))
 	{
 		$empresaMdl = new EmpresaModel();
 		$empresa    = $empresaMdl->getEmpresaRow($idEmpresa)->getRow();
-        $urlQR      = urlQR().$empresa->EMPRESA_SLUG;
-        $logo       = $empresa->EMPRESA_LOGOTIPO;
+                $urlQR      = urlQR().$empresa->EMPRESA_SLUG;
+                $logo       = $empresa->EMPRESA_LOGOTIPO;
 
-        $result = Builder::create()
-                ->writer(new PngWriter())
-                ->writerOptions([])
-                ->data($urlQR)
-                ->encoding(new Encoding('UTF-8'))
-                ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
-                ->size(480)
-                ->margin(10)
-                ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
-                // ->logoPath(__DIR__.'/assets/symfony.png')
-                ->validateResult(false)
-                ->build();
+                if( $logo ){
+                        $result = Builder::create()
+                                ->writer(new PngWriter())
+                                ->writerOptions([])
+                                ->data($urlQR)
+                                ->encoding(new Encoding('UTF-8'))
+                                ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
+                                ->size(480)
+                                ->margin(10)
+                                ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
+                                ->logoPath($logo)
+                                ->logoResizeToWidth(sizeLogoQr($logo))
+                                ->validateResult(false)
+                                ->build();
+                }else{
+                        $result = Builder::create()
+                                ->writer(new PngWriter())
+                                ->writerOptions([])
+                                ->data($urlQR)
+                                ->encoding(new Encoding('UTF-8'))
+                                ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
+                                ->size(480)
+                                ->margin(10)
+                                ->roundBlockSizeMode(new RoundBlockSizeModeMargin())
+                                ->validateResult(false)
+                                ->build();
+                }
 
-        //CREAR DIRECTORIO SI NO EXISTE
-        $directorio = "public/upload/empresas/".$idEmpresa."/qr/";
-        createDir($directorio);
+                
 
-        // // Save it to a file
-        $aleatorio	= generaRandom();
-        $urlImg 	= $directorio."qr_".$aleatorio.".png";  
+                //CREAR DIRECTORIO SI NO EXISTE
+                $directorio = "public/upload/empresas/".$idEmpresa."/qr/";
+                createDir($directorio);
 
-        $result->saveToFile($urlImg);
+                // // Save it to a file
+                $aleatorio	= generaRandom();
+                $urlImg 	= $directorio."qr_".$aleatorio.".png";  
 
-        //INSERT/UPDATE IN DATABASE
-        $empresaMdl->updateEmpresaQRCampo($idEmpresa, 'EMP_QR_FLAG', FALSE);
-        $insert = array(
-            'EMPRESA_ID'	=> $idEmpresa,
-            'EMP_QR_IMG'	=> $urlImg,
-            'EMP_QR_DATE'   => fechaNow()
-          );
-        $empresaMdl->insertEmpresaQR($insert);
+                $result->saveToFile($urlImg);
 
-        return $urlImg;
+                //INSERT/UPDATE IN DATABASE
+                $empresaMdl->updateEmpresaQRCampo($idEmpresa, 'EMP_QR_FLAG', FALSE);
+                $insert = array(
+                'EMPRESA_ID'	=> $idEmpresa,
+                'EMP_QR_IMG'	=> $urlImg,
+                'EMP_QR_DATE'   => fechaNow()
+                );
+                $empresaMdl->insertEmpresaQR($insert);
+
+                return $urlImg;
 	}
 }

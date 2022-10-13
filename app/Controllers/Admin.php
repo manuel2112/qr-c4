@@ -499,7 +499,7 @@ class Admin extends BaseController {
         $widthResize	= $_POST['widthResize'];
         $coords			= json_decode($_POST['coords']);
 
-		//INSERT GRUPO
+		//INSERT PRODUCTO
 		$dataProducto = array(
 			'GRUPO_ID'        => $idGrupo,
 			'PRODUCTO_NOMBRE' => $nombre,

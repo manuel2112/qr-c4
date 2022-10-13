@@ -89,13 +89,10 @@ class MailingModel extends Model
              ->insert($data);
     }  
 
-    public function insertEmailStatus($email,$bool,$status){
-        $data = array(
-                        "MAILING_TXT"           => $email,
-                        'MAILING_MICROSOFT'     => $bool,
-                        'MAILING_ESTADO_ID'     => $status
-                    );
-        $this->db->insert('mailing', $data);
+    public function insertEmailStatus($data){
+        $this->db
+             ->table('mailing')
+             ->insert($data);
     }  
 
     public function getCorreoGrupo($paquete,$grupo){

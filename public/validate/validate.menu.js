@@ -106,12 +106,11 @@ new Vue({
             this.loadInit ? Swal.showLoading() : '' ;
             const self = this;
 
-            this.$http.get(base_url + 'menu/instanciar').then(function(res) {
+            this.$http.get(`${base_url}menu/instanciar`).then(function(res) {
 
                 self.grupos = res.data.grupos;
 
                 //INSTANCIAR NÚMERO DE IMÁGENES
-                // self.maxImgs = 20;
                 self.maxImgs = res.data.plan.MEMBRESIA_IMG;
 
                 self.loadInit ? Swal.close() : '' ;
@@ -211,7 +210,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
             
-            this.$http.post(base_url + 'menu/insertGrupo', formData).then(function(res) {
+            this.$http.post(`${base_url}menu/insertGrupo`, formData).then(function(res) {
 
                 self.btnInsertGrupoLoad(false, false);
                 if( res.data.ok ){
@@ -274,7 +273,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
             
-            this.$http.post(base_url + 'menu/editGrupo', formData).then(function(res) {
+            this.$http.post(`${base_url}menu/editGrupo`, formData).then(function(res) {
                 
                 self.btnEditGrupoLoad(false, false);                
                 if( res.data.ok ){
@@ -305,7 +304,7 @@ new Vue({
             const textAccion    = 'LOS GRUPOS HAN SIDO REORDENADO EXITOSAMENTE';
             this.btnEditOrderGrupoLoad(true, true);
 
-            this.$http.post(base_url + 'menu/orderGrupo', { grupos: this.gruposEdit }).then(function(res) {
+            this.$http.post(`${base_url}menu/orderGrupo`, { grupos: this.gruposEdit }).then(function(res) {
                 if ( res.data.ok ) {
                     self.swalSuccess(titleAccion, textAccion)
                     self.instanciar();
@@ -459,7 +458,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
 
-            this.$http.post(base_url + 'menu/insertProducto', formData).then(function(res) {
+            this.$http.post(`${base_url}menu/insertProducto`, formData).then(function(res) {
                                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -506,7 +505,7 @@ new Vue({
             this.btnEditOrderProductosLoad(true, true);
             Swal.showLoading();
 
-            this.$http.post(base_url + 'menu/orderProductos', { productos: this.productosEdit }).then(function(res) {
+            this.$http.post(`${base_url}menu/orderProductos`, { productos: this.productosEdit }).then(function(res) {
 
                 self.btnEditOrderProductosLoad(false, false);
                 if ( res.data.ok ) {
@@ -573,7 +572,7 @@ new Vue({
             const formData = new FormData();
             formData.append('producto', JSON.stringify(this.productosEdit) );
 
-            this.$http.post(base_url + 'menu/editProducto', formData).then(function(res) {
+            this.$http.post(`${base_url}menu/editProducto`, formData).then(function(res) {
                 
                 self.btnEditProductoLoad(false, false);
                 if( res.data.ok ){
@@ -676,7 +675,7 @@ new Vue({
             Swal.showLoading();
 
             const dataString = { idProducto: this.productoGet.PRODUCTO_ID, vps: JSON.stringify(this.productoEditVPS) };
-            this.$http.post(base_url + 'menu/editVP', dataString).then(function(res) {                
+            this.$http.post(`${base_url}menu/editVP`, dataString).then(function(res) {                
                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -740,7 +739,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
 
-            this.$http.post(base_url + 'menu/editGaleriaProductos', formData).then(function(res) {
+            this.$http.post(`${base_url}menu/editGaleriaProductos`, formData).then(function(res) {
                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);

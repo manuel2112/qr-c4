@@ -235,9 +235,9 @@ class Mailing extends BaseController {
 
     public function status()
     {
-        $status = 1; //ACTIVO
+        // $status = 1; //ACTIVO
         // $status = 2; //LISTA NEGRA
-        // $status = 3; //REBOTADO
+        $status = 3; //REBOTADO
         // $status = 4; //INACTIVO
         // $status = 5; //SPAM
         // $status = 6; //BAJA
@@ -274,7 +274,7 @@ class Mailing extends BaseController {
 
             if( filter_var($email,FILTER_VALIDATE_EMAIL) ){
 
-                $existe = $this->mailing_model->getCorreoSearchRow($email);
+                $existe = $this->mailing_model->getCorreoSearchRow($email)->getRow();
                 
                 if( $existe ){
                     if( $existe->MAILING_ESTADO_ID != $status ){
@@ -283,7 +283,12 @@ class Mailing extends BaseController {
                     }
                 }else{
                     $bool = esMicrosoft($email);
-                    $this->mailing_model->insertEmailStatus($email, $bool, $status);
+                    $dataEmail = array(
+                        "MAILING_TXT"           => $email,
+                        'MAILING_MICROSOFT'     => $bool,
+                        'MAILING_ESTADO_ID'     => $status
+                    );			  
+                    $this->mailing_model->insertEmailStatus($dataEmail);
                     $countNoExistente++;
                 }
             }else{
@@ -311,8 +316,6 @@ class Mailing extends BaseController {
 
         $existen    = file($path, FILE_IGNORE_NEW_LINES|FILE_SKIP_EMPTY_LINES);
         $porLeer    = count($existen);
-        
-        // //COUNT POR LEER
 
         $msn .= '<strong>ESTADO:</strong> '.nmbEstado($status).'<br>';
         $msn .= '<strong>SEGUNDOS PROCESADOS:</strong> '.diffSegundos($start).'<br>';

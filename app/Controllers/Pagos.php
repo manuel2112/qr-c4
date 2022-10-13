@@ -1,26 +1,31 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Pagos extends CI_Controller {
+namespace App\Controllers;
+
+class Pagos extends BaseController {
+
+	public $menu_model;
 
 	public function __construct()
 	{
-		parent::__construct();
-		if (!$this->session->userdata('idqrsession')) {
-			$this->session->set_userdata('', current_url());
-			redirect(base_url('login'));
+		if (!session('usuario')) {
+			header('Location: '.base_url('login'));
+			exit();
 		}
-		$this->session_id 	        = $this->session->userdata('idqrsession');
-		$this->session_nmb 	        = $this->session->userdata('nmbqrsession');
-		$this->isadminqrsession 	= $this->session->userdata('isadminqrsession');
-        $this->load->library('transbankrest');
-        $this->load->library('session'); 
-        $this->load->helper('url');
+
+		// $this->menu_model 		= new MenuModel();
+
+		$session = session();
+		$this->session_id 		= $session->get('usuario')['idqrsession'];
+
+        // $this->load->library('transbankrest');
+        // $this->load->library('session'); 
+        // $this->load->helper('url');
 	}
 
 	public function index()
 	{
-		$this->layout->view('index');
+        return view('pagos/index');
 	}
 
 	public function instanciar()
@@ -31,7 +36,7 @@ class Pagos extends CI_Controller {
 		$data['msnMembresia']   = avisoMembresia($idEmpresa);
 		$data['textos']         = $this->textos();
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
     public function textos()
@@ -72,7 +77,7 @@ class Pagos extends CI_Controller {
         $data['msn'] = '<div class="alert alert-success"><h4 class="text-center">POR PAGAR: '.formatoDinero($subTotal).' + IVA <br> TOTAL: '.formatoDinero($total).'</h4></div>';
 
         $data['ok'] = true;
-		echo json_encode($data);
+		return $this->response->setJSON($data);
     } 
 	
 	public function pay()
@@ -198,7 +203,7 @@ class Pagos extends CI_Controller {
         $data['membresia'] = $this->membresia_model->getTipoMembresiaRow($idMembresia);
 		$data['ok'] = true;
 
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	/*=============================================

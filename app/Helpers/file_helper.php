@@ -162,11 +162,11 @@ if(!function_exists('sizeLogoQr'))
 {
 	function sizeLogoQr($img)
 	{
-        list($width, $height, $type, $attr) = getimagesize(base_url().$img);
+        list($width, $height, $type, $attr) = getimagesize($img);
         $ratio  = $width / $height;
 
         if( $ratio >= 1 ){
-            return 150;
+            return 200;
         }
         elseif( 1 > $ratio && $ratio >= 0.5 ){
             return 100;

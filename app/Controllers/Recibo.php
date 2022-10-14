@@ -2,11 +2,14 @@
 
 namespace App\Controllers;
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use App\Models\PagoModel;
+
 class Recibo extends BaseController {
 
 	function __construct()
 	{
-		// $this->load->library('pdf');	
 	}
 
 	public function index()
@@ -15,95 +18,22 @@ class Recibo extends BaseController {
 
 	public function cliente()
 	{
-		$buyOrder 	= $this->uri->segment(3);
-		$compra		= $this->pago_model->getPagoRow( 'PAGO_ORDEN', $buyOrder );
-		$request	= $this->pago_model->getPagoRequestRow( 'PAGO_REQ_BUY_ORDER', $buyOrder );
+		$data       = array();
+		$uri 		= new \CodeIgniter\HTTP\URI(uri_string());
+		$buyOrder 	= $uri->getSegment(3);
 
-		if( !$compra ){
-			redirect(base_url('my404'));
-			exit();
-		}
-
-		$this->pdf = new PDF();
-		$this->pdf->AliasNbPages();
-		$this->pdf->AddPage();
+		$pago_model 	= new PagoModel();
+		$data['compra']	= $pago_model->getPagoRecibo( 'PAGO_ORDEN', $buyOrder )->getRow();
+		$filename 		= 'COMPRA_' . $buyOrder;
 		
-		//HEADER
-		$this->pdf->Image('public/images/logo.png',10,6,20);
-		$this->pdf->SetFont('Arial','B',15);
-		$this->pdf->Cell(80);
-		$this->pdf->Cell(30,10,utf8_decode('COMPROBANTE DE PAGO'),0,0,'C');
-		$this->pdf->Ln(10);
-		$this->pdf->SetFont('Arial','B',14);
-		$this->pdf->Cell(80);
-		$this->pdf->Ln(0);
+		$options = new Options();
+		$options->set('isRemoteEnabled', TRUE);
 
-		$this->pdf->SetDrawColor(11,60,93);
-		$this->pdf->SetLineWidth(0.5);
-		$this->pdf->Line(10, 35, 210-10, 35);
-		$this->pdf->Ln(20);
-		
-		//BODY
-		$this->pdf->SetFont('Arial','B',14);
-		$this->pdf->Cell(80);
-		$this->pdf->Cell(30,10,utf8_decode('DETALLE'),0,0,'C');
-		$this->pdf->Ln(10);
-		
-		$this->pdf->SetFont('Arial','',12);
-		$this->pdf->SetDrawColor(0,0,0);
-		$this->pdf->SetLineWidth(0.2);
-		
-		$this->pdf->Cell(95,8,'ORDEN DE COMPRA',1,0,'R',0);
-		$this->pdf->Cell(95,8, $buyOrder ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8,'PLAN',1,0,'R',0);
-		$this->pdf->Cell(95,8, $compra->MEMBRESIA_NOMBRE ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8,'CANTIDAD',1,0,'R',0);
-		$this->pdf->Cell(95,8, $compra->PAGO_CANTIDAD ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8,'NETO',1,0,'R',0);
-		$this->pdf->Cell(95,8, formatoDinero($compra->PAGO_NETO) ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8,'IVA',1,0,'R',0);
-		$this->pdf->Cell(95,8, formatoDinero($compra->PAGO_IVA) ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8,'TOTAL',1,0,'R',0);
-		$this->pdf->Cell(95,8, formatoDinero($compra->PAGO_TOTAL) ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8,'FECHA',1,0,'R',0);
-		$this->pdf->Cell(95,8, $compra->PAGO_FECHA ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8,'PAGO CON',1,0,'R',0);
-		$this->pdf->Cell(95,8, 'WEBPAY' ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8, utf8_decode('TARJETA N°') ,1,0,'R',0);
-		$this->pdf->Cell(95,8, '**** **** **** '.$request->PAGO_REQ_CARD_NUMBER ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		$this->pdf->Cell(95,8, 'TIPO DE PAGO' ,1,0,'R',0);
-		$this->pdf->Cell(95,8, tipoPago($request->PAGO_REQ_PAY_TYPE_CODE) ,1,0,'R',0);
-		$this->pdf->Ln();
-
-		if( $request->PAGO_REQ_INSTALLMENTS_AMOUNT ){
-			$this->pdf->Cell(95,8, utf8_decode('N° DE CUOTAS') ,1,0,'R',0);
-			$this->pdf->Cell(95,8, $request->PAGO_REQ_INSTALLMENTS_NUMBER ,1,0,'R',0);
-			$this->pdf->Ln();
-
-			$this->pdf->Cell(95,8, utf8_decode('MONTO CUOTA') ,1,0,'R',0);
-			$this->pdf->Cell(95,8, formatoDinero($request->PAGO_REQ_INSTALLMENTS_AMOUNT) ,1,0,'R',0);
-			$this->pdf->Ln();
-		}
-
-        $this->pdf->Output('COMPRA_' . $buyOrder . '.pdf', 'I');
+		$dompdf = new Dompdf($options);
+		$dompdf->loadHtml(view("pdf/index", $data));
+		$dompdf->setPaper('A4', 'portrait');
+		$dompdf->render();
+		$dompdf->stream($filename);
 	}
 
 	public function exportFile()

@@ -1,0 +1,30 @@
+FECHA: 2022-10-14 10:32:26
+vci: TSY
+amount: 11900
+status: AUTHORIZED
+buyOrder: 48
+sessionId: FBQR-1665751402
+card_number: 7763
+accountingDate: 1014
+transactionDate: 2022-10-14T12:43:22.471Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 
+FECHA: 2022-10-14 10:33:35
+vci: TSY
+amount: 11900
+status: AUTHORIZED
+buyOrder: 48
+sessionId: FBQR-1665751402
+card_number: 7763
+accountingDate: 1014
+transactionDate: 2022-10-14T12:43:22.471Z
+authorizationCode: 1415
+paymentTypeCode: VD
+responseCode: 0
+installmentsAmount: 
+installmentsNumber: 0
+balance: 

@@ -16,7 +16,7 @@ new Vue({
         instanciar() {
             Swal.showLoading();
             const self = this;
-            this.$http.post(`${base_url}/gestion/instanciar`).then(function(res) {
+            this.$http.post(`${base_url}gestion/instanciar`).then(function(res) {
                 
                 self.parametros         = res.data.parametros;
                 self.editParam          = res.data.editParametros;
@@ -34,7 +34,7 @@ new Vue({
             const txtText       = "SE EDITARÁN LOS PARAMETROS DEL SISTEMA";
             const buttonText    = "SI, EDITAR PARAMETROS!";
             const buttonColor   = "#5cb85c";
-            const apiRest       = `${base_url}/gestion/editParametros`;
+            const apiRest       = `${base_url}gestion/editParametros`;
             const dataString    = { parametros: this.editParam };
             const titleAccion   = 'PARAMETROS';
             const textAccion    = "PARAMETROS EDITADOS";
@@ -46,7 +46,7 @@ new Vue({
         ejecutarCron(){
             Swal.showLoading();
             const self = this;
-            this.$http.post(`${base_url}/cron/index`).then(function(res) {
+            this.$http.post(`${base_url}cron/index`).then(function(res) {
                 
                 self.swalSuccess('CRON', 'CRON EJECUTADO CON ÉXITO');
                                 

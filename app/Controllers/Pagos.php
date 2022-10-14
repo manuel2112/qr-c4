@@ -2,9 +2,18 @@
 
 namespace App\Controllers;
 
+use App\Models\PagoModel;
+use App\Models\EmpresaModel;
+use CodeIgniter\HTTP\Request;
+use App\Models\MembresiaModel;
+use Transbank\Webpay\WebpayPlus;
+use Transbank\Webpay\WebpayPlus\Transaction;
+
 class Pagos extends BaseController {
 
-	public $menu_model;
+	public $pago_model;
+	public $empresa_model;
+	public $membresia_model;
 
 	public function __construct()
 	{
@@ -13,14 +22,21 @@ class Pagos extends BaseController {
 			exit();
 		}
 
-		// $this->menu_model 		= new MenuModel();
+        if( getenv('CI_ENVIRONMENT') == 'production' ){
+            // WebpayPlus::configureForProduction(
+            //     getenv('webpay_plus_cc'),
+            //     getenv('webpay_plus_api_key')
+            // );
+        }else{
+            WebpayPlus::configureForTesting();
+        }
+
+		$this->pago_model 		= new PagoModel();
+		$this->empresa_model 	= new EmpresaModel();
+		$this->membresia_model  = new MembresiaModel();
 
 		$session = session();
 		$this->session_id 		= $session->get('usuario')['idqrsession'];
-
-        // $this->load->library('transbankrest');
-        // $this->load->library('session'); 
-        // $this->load->helper('url');
 	}
 
 	public function index()
@@ -84,11 +100,11 @@ class Pagos extends BaseController {
 	{
         $data           = array();
         $data['error']  = false;
-        $cantMeses      = trim($this->input->post("cantMeses",true));
-        $valor	        = trim($this->input->post("valor",true));
+        $cantMeses      = trim($_POST["cantMeses"]);
+        $valor	        = trim($_POST["valor"]);
         // $valor	        = 100;
-        $plan	        = trim($this->input->post("plan",true));
-        $idMembresia    = trim($this->input->post("idMembresia",true));
+        $plan	        = trim($_POST["plan"]);
+        $idMembresia    = trim($_POST["idMembresia"]);
 
         if( !$cantMeses ){
             $data['error'] = true;
@@ -99,8 +115,9 @@ class Pagos extends BaseController {
 		$neto       = $cantMeses * $valor;
 		$iva        = redondear($neto * (iva() / 100));
 		$total      = $neto + $iva;
-        $sessionId  = 'sessionFacilbakQRPay';
         $buyOrder 	= time();
+        $sessionId  = 'FBQR-' . $buyOrder;
+        $urlReturn  = base_url('pagos/result');
         
         $data['plan']       = 'PLAN '.$plan;
         $data['valor']      = $valor;
@@ -109,54 +126,102 @@ class Pagos extends BaseController {
         $data['neto']       = $neto;
         $data['iva']        = $iva;
         $data['total']      = $total;
+
+        $dataPago = array(
+            'EMPRESA_ID'		=> $this->session_id,
+            'PAGO_ORDEN'		=> $buyOrder,
+            'PAGO_TOKEN'		=> NULL,
+            'MEMBRESIA_ID'		=> $idMembresia,
+            'PAGO_CANTIDAD'		=> $cantMeses,
+            'PAGO_NETO'			=> $neto,
+            'PAGO_IVA'			=> $iva,
+            'PAGO_TOTAL'		=> $total,
+            'PAGO_FECHA'		=> fechaNow()
+          );
+        $idPago = $this->pago_model->insertPago($dataPago);
+
+        $transaccion = (new Transaction)->create(
+            $idPago,
+            $sessionId,
+            $total,
+            $urlReturn
+        );
+
+        $data['token']      = $transaccion->getToken();
+        $data['url_to_pay'] = $transaccion->getUrl();
+
+        $this->pago_model->updatePagoCampo($idPago, 'PAGO_TOKEN', $data['token']);
         
-        $returnUrl  = 'pagos/result';
-                
-        $this->transbankrest->setBuyOrder($buyOrder);
-        $this->transbankrest->setSession($sessionId);
-        $this->transbankrest->setMonto($total);
-        $this->transbankrest->setReturnUrl($returnUrl);
-
-        $transaccion = $this->transbankrest->transaction();
-
-        $data['formAction'] = $transaccion->url;
-        $data['tokenWs']    = $transaccion->token;
-
-        $this->pago_model->insertPago($this->session_id,$buyOrder,$data['tokenWs'],$idMembresia,$cantMeses,$neto,$iva,$total,fechaNow());
-        
-        $this->layout->view('pay',$data);
+        return view('pagos/pay',$data);
 	}
 
     public function result()
-    { 
-        $ws_token = filter_input(INPUT_POST, 'token_ws');
+    {
+		$data       = array();
+        $token_ws   = isset($_GET["token_ws"]) ? $_GET["token_ws"] : NULL;
 
-        if( empty($ws_token) ){
-            redirect(base_url('pagos/error'));
+        if( $token_ws ){
+            $response = '';
+
+            $existe = $this->pago_model->existePago($token_ws);
+            if( $existe > 0 ){
+                return redirect()->to('pagos/miscompras');
+            }
+
+            $response = (new Transaction)->commit($token_ws);
+
+            // SI EL PAGO ESTÁ AUTORIZADO
+            if( $response->status == 'AUTHORIZED' ){
+
+                //PAGO REALIZADO CON ÉXITO
+                $this->pago_model->updatePagoCampo($response->buyOrder, 'PAGO_PAY', TRUE);
+
+                //DATOS REQUEST
+                $dataRequest = array(
+                    'PAGO_ID'						=> $response->buyOrder,
+                    'PAGO_REQ_ACCOUNTING_DATE'		=> $response->accountingDate,
+                    'PAGO_REQ_BUY_ORDER'			=> $response->buyOrder,
+                    'PAGO_REQ_CARD_NUMBER'			=> $response->cardNumber,
+                    'PAGO_REQ_AMOUNT'				=> $response->amount,
+                    'PAGO_REQ_BUY_ORDER_2'			=> $response->buyOrder,
+                    'PAGO_REQ_AUTHORIZATION_CODE'	=> $response->authorizationCode,
+                    'PAGO_REQ_PAY_TYPE_CODE'		=> $response->paymentTypeCode,
+                    'PAGO_REQ_RESPONSE_CODE'		=> $response->responseCode,
+                    'PAGO_REQ_SESSIONID'			=> $response->sessionId,
+                    'PAGO_REQ_DATE'					=> $response->transactionDate,
+                    'PAGO_REQ_VCI'					=> $response->vci,
+                    'PAGO_REQ_STATUS'				=> $response->status,
+                    'PAGO_REQ_INSTALLMENTS_AMOUNT'	=> $response->installmentsAmount,
+                    'PAGO_REQ_INSTALLMENTS_NUMBER'	=> $response->installmentsNumber,
+                    'PAGO_REQ_BALANCE_NUMBER'		=> $response->balance
+                );
+                $this->pago_model->insertPagoRequest($dataRequest);
+
+                //INGRESAR PLANES COMPRADOS
+                $compra = $this->pago_model->getPagoRow('PAGO_TOKEN', $token_ws)->getRow();
+                calcularMembresia($compra);
+
+                //ENVIAR MAIL COMPROBANTE DE PAGO
+                email_pago($response->buyOrder);
+
+                // //CREAR LOG
+                crearLogPlus($response);
+
+                $data['token_ws']   = $token_ws;
+                $data['status']     = $response->status;
+                $mdlPago            = $this->pago_model->getPagoRow( 'PAGO_ID', $response->buyOrder )->getRow();
+                $data['buyOrder']   = $mdlPago->PAGO_ORDEN;
+
+            }
+
+        }else{
+            // $_GET["TBK_TOKEN"];
+            // $_GET["TBK_ORDEN_COMPRA"];
+            // $_GET["TBK_ID_SESION"];
         }
 
-        $result = $this->transbankrest->getTransactionResult( $ws_token );
-        $status = $this->transbankrest->getTransactionStatus( $ws_token );
-        
-        if ( $result->responseCode === 0 ) {
+        return view('pagos/result',$data);
 
-            $this->pago_model->updatePagoPay($ws_token);
-            $mdlPago = $this->pago_model->getPagoRow( 'PAGO_TOKEN', $ws_token );
-            crearLogPlus($result,$status);
-            
-            $this->session->set_userdata("idqrsession", $mdlPago->EMPRESA_ID);
-			$this->session->userdata('idqrsession');
-
-            //INSERT MEMBRESÍA
-            calcularMembresia($mdlPago);
-                        
-            redirect('pagos/exito');
-
-        } else {
-            $data               = array(); 
-            $data['empresa']    = $this->empresa_model->getEmpresaRow($this->session_id);
-            $this->layout->view('error',$data);
-        }
     }
 
     public function exito()
@@ -188,9 +253,9 @@ class Pagos extends BaseController {
     public function miscompras()
     {
 		$data = array();
-		$data['empresa']    = $this->empresa_model->getEmpresaRow($this->session_id);
-		$data['compras']    = $this->pago_model->getPagosPorEmpresa($this->session_id);
-        $this->layout->view('miscompras',$data);
+		$data['empresa']    = $this->empresa_model->getEmpresaRow($this->session_id)->getRow();
+		$data['compras']    = $this->pago_model->getPagosPorEmpresa($this->session_id)->getResult();
+        return view('pagos/miscompras',$data);
     }
 
 	public function seleccionarMembresia()
@@ -200,7 +265,7 @@ class Pagos extends BaseController {
 		$request        = json_decode(file_get_contents('php://input'));
 		$idMembresia    = trim($request->idMembresia);
 
-        $data['membresia'] = $this->membresia_model->getTipoMembresiaRow($idMembresia);
+        $data['membresia'] = $this->membresia_model->getTipoMembresiaRow($idMembresia)->getRow();
 		$data['ok'] = true;
 
         return $this->response->setJSON($data);

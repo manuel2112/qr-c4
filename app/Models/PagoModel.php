@@ -12,21 +12,36 @@ class PagoModel extends Model
 	  $this->db = \Config\Database::connect();
 	}
 	
-	public function insertPago($idEmpresa,$orden,$token,$idMembresia,$cantidad,$neto,$iva,$total,$date)
+	public function insertPago($data)
     {
-		$data = array(
-						'EMPRESA_ID'		=> $idEmpresa,
-						'PAGO_ORDEN'		=> $orden,
-						'PAGO_TOKEN'		=> $token,
-						'MEMBRESIA_ID'		=> $idMembresia,
-						'PAGO_CANTIDAD'		=> $cantidad,
-						'PAGO_NETO'			=> $neto,
-						'PAGO_IVA'			=> $iva,
-						'PAGO_TOTAL'		=> $total,
-						'PAGO_FECHA'		=> $date
-					);
-		$this->db->insert('empresa_pago', $data);
+		$this->db
+			 ->table('empresa_pago')
+			 ->insert($data);
+		return $this->db->insertID();
     }
+
+	public function updatePagoCampo($idPago, $campo, $valor)
+	{
+	  $builder = $this->db->table('empresa_pago');
+	  $builder->set($campo, $valor);
+	  $builder->where('PAGO_ID', $idPago);
+	  $builder->update();
+	}
+
+	public function existePago($token)
+	{
+	  $where = array(
+					  "PAGO_TOKEN" 	=> $token,
+					  "PAGO_PAY" 	=> TRUE
+					);
+  
+	  $builder = $this->db->table('empresa_pago');
+	  $builder->select('*');
+	  $builder->where($where);
+	  $query = $builder->countAllResults();
+  
+	  return $query;
+	}
 
 	public function updatePagoPay($token)
     {
@@ -39,32 +54,50 @@ class PagoModel extends Model
 
     public function getPagoRow( $campo, $value )
     {
-        $where = array(
-						$campo	=> $value
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_pago")
-					    ->join('membresia', 'membresia.MEMBRESIA_ID = empresa_pago.MEMBRESIA_ID')
-                        ->where($where)
-                        ->get();
-        return $query->row();
+		$where = array(
+						$campo => $value
+					  );
+	
+		$builder = $this->db->table('empresa_pago');
+		$builder->select('*');
+		$builder->join('membresia', 'membresia.MEMBRESIA_ID = empresa_pago.MEMBRESIA_ID');
+		$builder->where($where);
+		$query = $builder->get();
+	
+		return $query;
+    }
+
+    public function getPagoRecibo( $campo, $value )
+    {
+		$where = array(
+						$campo => $value
+					  );
+	
+		$builder = $this->db->table('empresa_pago');
+		$builder->select('*');
+		$builder->join('membresia', 'membresia.MEMBRESIA_ID = empresa_pago.MEMBRESIA_ID');
+		$builder->join('empresa_pago_request', 'empresa_pago_request.PAGO_ID = empresa_pago.PAGO_ID');
+		$builder->where($where);
+		$query = $builder->get();
+	
+		return $query;
     }
 
     public function getPagosPorEmpresa( $idEmpresa )
     {
-        $where = array(
+		$where = array(
 						'empresa_pago.EMPRESA_ID'	=> $idEmpresa,						
 						'empresa_pago.PAGO_PAY'		=> true
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_pago")
-					    ->join('membresia', 'membresia.MEMBRESIA_ID = empresa_pago.MEMBRESIA_ID')
-                        ->where($where)
-						->order_by("empresa_pago.PAGO_ID DESC")
-                        ->get();
-        return $query->result();
+					  );
+	
+		$builder = $this->db->table('empresa_pago');
+		$builder->select('*');
+		$builder->join('membresia', 'membresia.MEMBRESIA_ID = empresa_pago.MEMBRESIA_ID');
+		$builder->where($where);
+		$builder->orderBy('empresa_pago.PAGO_ID', 'DESC');
+		$query = $builder->get();
+	
+		return $query;
     }
 
     public function getLastPagoPorEmpresa( $idEmpresa )
@@ -87,40 +120,25 @@ class PagoModel extends Model
 	/******PAGO/REQUEST*****/
 	/**************************/
 		
-	public function insertPagoRequest( $idPedido, $log, $status )
+	public function insertPagoRequest( $data )
 	{
-		$data = array(
-						'PAGO_ID'						=> $idPedido,
-						'PAGO_REQ_ACCOUNTING_DATE'		=> $log->accountingDate,
-						'PAGO_REQ_BUY_ORDER'			=> $log->buyOrder,
-						'PAGO_REQ_CARD_NUMBER'			=> $log->cardDetail['card_number'],
-						'PAGO_REQ_AMOUNT'				=> $log->amount,
-						'PAGO_REQ_BUY_ORDER_2'			=> $log->buyOrder,
-						'PAGO_REQ_AUTHORIZATION_CODE'	=> $log->authorizationCode,
-						'PAGO_REQ_PAY_TYPE_CODE'		=> $log->paymentTypeCode,
-						'PAGO_REQ_RESPONSE_CODE'		=> $log->responseCode,
-						'PAGO_REQ_SESSIONID'			=> $log->sessionId,
-						'PAGO_REQ_DATE'					=> $log->transactionDate,
-						'PAGO_REQ_VCI'					=> $log->vci,
-						'PAGO_REQ_STATUS'				=> $log->status,
-						'PAGO_REQ_INSTALLMENTS_AMOUNT'	=> $status->installmentsAmount,
-						'PAGO_REQ_INSTALLMENTS_NUMBER'	=> $status->installmentsNumber,
-						'PAGO_REQ_BALANCE_NUMBER'		=> $status->balance
-					);
-		$this->db->insert('empresa_pago_request', $data);
+		$this->db
+			 ->table('empresa_pago_request')
+			 ->insert($data);
 	}
     
     public function getPagoRequestRow( $campo, $value )
     {
-        $where = array(
-						$campo	=> $value
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("empresa_pago_request")
-                        ->where($where)
-                        ->get();
-        return $query->row();
+		$where = array(
+						$campo => $value
+					  );
+	
+		$builder = $this->db->table('empresa_pago_request');
+		$builder->select('*');
+		$builder->where($where);
+		$query = $builder->get();
+	
+		return $query;
     }
 	
 } 

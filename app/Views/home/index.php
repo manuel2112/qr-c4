@@ -20,7 +20,7 @@
 
 	<div class="text-center" v-if="msnMembresia">
 		<a 
-			href="<?php echo base_url()?>pagos" 
+			href="<?php echo base_url()?>/pagos" 
 			class="btn btn-danger">
 			<strong>
 				RENOVAR MEMBRESÍA 
@@ -37,7 +37,7 @@
 			<div v-if=" empresa.EMPRESA_MEMBRESIA == 1 ">
 			
 				<a 
-					href="<?php echo base_url()?>empresa"
+					href="<?php echo base_url()?>/empresa"
 					class="btn btn-primary btn-block btn-lg"
 					v-if=" !empresa.EMPRESA_LOGOTIPO ">
 					<strong>PERSONALIZA TU QR INGRESANDO<br> TU LOGOTIPO AQUI</strong>

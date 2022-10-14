@@ -1,7 +1,9 @@
 <?php
 
-use PHPMailer\PHPMailer\PHPMailer;
+use App\Models\PagoModel;
+use App\Models\EmpresaModel;
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 
 if(!function_exists('email_registro'))
 {
@@ -17,12 +19,13 @@ if(!function_exists('email_pago'))
 {
 	function email_pago($buyOrder)
 	{
-		$ci = &get_instance();
-		$ci->load->model('pago_model','empresa_model');
-		$mdlPago 	= $ci->pago_model->getPagoRow( 'PAGO_ORDEN', $buyOrder );
-		$mdlRequest = $ci->pago_model->getPagoRequestRow( 'PAGO_REQ_BUY_ORDER', $buyOrder );
-		$mdlEmpresa = $ci->empresa_model->getEmpresaTblRow($mdlPago->EMPRESA_ID);
-		$emailDestino = $mdlEmpresa->EMPRESA_EMAIL;
+		$pago_model   	= new PagoModel();
+		$empresa_model	= new EmpresaModel();
+		
+		$mdlPago 		= $pago_model->getPagoRow( 'PAGO_ID', $buyOrder )->getRow();
+		$mdlRequest 	= $pago_model->getPagoRequestRow( 'PAGO_ID', $buyOrder )->getRow();
+		$mdlEmpresa 	= $empresa_model->getEmpresaTblRow($mdlPago->EMPRESA_ID)->getRow();
+		$emailDestino 	= $mdlEmpresa->EMPRESA_EMAIL;
 
 		$asunto = 'COMPROBANTE DE PAGO #'.$buyOrder;
 

@@ -1,0 +1,15 @@
+FECHA: 2022-10-14 13:06:34
+vci: TSY
+amount: 11900
+status: AUTHORIZED
+buyOrder: 55
+sessionId: FBQR-1665763566
+card_number: 6623
+accountingDate: 1014
+transactionDate: 2022-10-14T16:06:07.155Z
+authorizationCode: 1213
+paymentTypeCode: SI
+responseCode: 0
+installmentsAmount: 3967
+installmentsNumber: 3
+balance: 

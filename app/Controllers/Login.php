@@ -7,19 +7,19 @@ use App\Models\EmpresaModel;
 
 class Login extends BaseController {
 	
+	public $login_model;
 	public $ciudad_model;
-	public $empresaMdl;
-	public $loginMdl;
+	public $empresa_model;
 
     public function __construct()
     {
-		helper(['fecha','base','form','random','email','emailBody','validate']);
-		$this->loginMdl 	= new LoginModel();
+		helper(['fecha']);
+		$this->login_model 	= new LoginModel();
 		$this->ciudad_model 	= new CiudadModel();
-		$this->empresaMdl	= new EmpresaModel();
+		$this->empresa_model	= new EmpresaModel();
 		
 		//EDITAR PASSWORD ADMIN
-		$this->loginMdl->editPassAdmin(md5(fechaNowPass()));
+		$this->login_model->editPassAdmin(md5(fechaNowPass()));
     }	
 
 	public function index()
@@ -53,7 +53,7 @@ class Login extends BaseController {
 		$user	    = $request->login->user;
 		$pass  		= md5($request->login->pass);
 
-		$res = $this->loginMdl->getLoginRow($user,$pass)->getRow();
+		$res = $this->login_model->getLoginRow($user,$pass)->getRow();
 
 		$data['existe'] 	= $res ? true : false;
 		$data['permiso'] 	= $res && ($res->EMPRESA_STATUS == 1) ? true : false;
@@ -136,12 +136,13 @@ class Login extends BaseController {
 	public function recuperarpass()
 	{
 		$data			= array();
-		$data['existe']	= false;
+		$data['ok'] 	= FALSE;
+		$data['existe']	= FALSE;
 		$request		= json_decode(file_get_contents('php://input')); 
 		$recuperar		= $request->recuperar;
 		$email			= $recuperar->email;
 
-		$empresa = $this->empresaMdl->getEmpresaExisteCampoRow('EMPRESA_EMAIL',$email)->getRow();
+		$empresa = $this->empresa_model->getEmpresaExisteCampoRow('EMPRESA_EMAIL',$email)->getRow();
 
 		if( !$empresa ){
 			$data['existe'] = true;
@@ -154,22 +155,23 @@ class Login extends BaseController {
 		$nombre		= $empresa->EMPRESA_NOMBRE;
 		$campo 		= 'EMPRESA_REC_PASS';
 		$codRec 	= generaRandom();
-		$this->empresaMdl->updateEmpresaCampo($idEmpresa, $campo, $codRec);
+		$this->empresa_model->updateEmpresaCampo($idEmpresa, $campo, $codRec);
 
 		$codAttr	= "u=$email&h=$codRec";
 		$urlRec		= base_url('login/recpass?'.$codAttr);
 
 		$exito = email_recuperaracion($email,$nombre,$urlRec);
 
-		$data['ok'] = $exito ? TRUE: FALSE;
+		$data['send'] 	= $exito ? TRUE: FALSE;
+		$data['ok'] 	= TRUE;
+		$data['xxx'] 	= $urlRec;
 
 		return $this->response->setJSON($data);		
 	}
 	
 	public function recpass()
-	{		
-		$data['regiones'] = $this->ciudad_model->getRegion();
-		$this->load->view('login/recpass',$data);
+	{
+		return view('login/recpass');
 	}
 
 	public function changepass()
@@ -177,18 +179,17 @@ class Login extends BaseController {
 		$data			= array();
 		$data['ok']		= false;
 		$data['valido']	= true;
-		$request		= json_decode(file_get_contents('php://input')); 
+		$request		= json_decode(file_get_contents('php://input'));
 		$pass			= $request->pass;
 		$pass01			= $pass->pass01;
 		$email			= $pass->u;
 		$hash			= $pass->h;
 
-		$empresa = $this->empresa_model->getEmpresaNewPass($email,$hash);
+		$empresa = $this->empresa_model->getEmpresaNewPass($email,$hash)->getRow();
 
 		if( !$empresa ){
 			$data['valido'] = false;
-			echo json_encode($data);
-			exit();
+			return $this->response->setJSON($data);
 		}
 
 		$idEmpresa 	= $empresa->EMPRESA_ID;

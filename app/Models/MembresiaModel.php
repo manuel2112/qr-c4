@@ -175,14 +175,15 @@ class MembresiaModel extends Model
     {
         $where = array(
                         'MEMBRESIA_ID'      => $idMembresia,
-						'MEMBRESIA_FLAG'    => true
-					   );
-        $query = $this->db
-                        ->select("*")
-                        ->from("membresia")
-                        ->where($where)
-                        ->get();
-        return $query->row();
+                        'MEMBRESIA_FLAG'    => true
+                      );
+    
+        $builder = $this->db->table('membresia');
+        $builder->select('*');
+        $builder->where($where);
+        $query = $builder->get();
+    
+        return $query;
     }
 	
 } 

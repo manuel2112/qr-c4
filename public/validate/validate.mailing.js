@@ -61,7 +61,7 @@ new Vue({
             this.initLoading ? Swal.showLoading() : '';
             const self = this;
             
-            this.$http.post(`${base_url}/mailing/instanciar`).then(function(res) {
+            this.$http.post(`${base_url}mailing/instanciar`).then(function(res) {
                 
                 self.estados                = res.data.estados;
                 self.resumen.total          = res.data.total;
@@ -108,7 +108,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'INGRESO EMAIL';
             const dataString = { email: this.emailIns };
-            await this.$http.post(`${base_url}/mailing/insertEmail`, dataString).then(function(res) {
+            await this.$http.post(`${base_url}mailing/insertEmail`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     if( res.data.existe ){
@@ -134,7 +134,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'INGRESO GRUPO';
             const dataString = { grupo: this.grupoIns };
-            await this.$http.post(`${base_url}/mailing/insertGrupo`, dataString).then(function(res) {
+            await this.$http.post(`${base_url}mailing/insertGrupo`, dataString).then(function(res) {
 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, res.data.msn);
@@ -156,7 +156,7 @@ new Vue({
             const self = this;
             const titleAccion   = 'BUSCAR EMAIL';
             const dataString = { email: this.emailIns };
-            await this.$http.post(`${base_url}/mailing/searchEmail`, dataString).then(function(res) {
+            await this.$http.post(`${base_url}mailing/searchEmail`, dataString).then(function(res) {
                 
                 if( res.data.ok ){
                     if( res.data.existe ){

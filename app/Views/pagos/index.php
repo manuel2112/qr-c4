@@ -313,7 +313,7 @@
 				CUERPO DEL MODAL
 				======================================-->
 
-				<form method="post" action="<?php echo base_url()?>pagos/pay" id="form-pagos">
+				<form method="post" action="<?php echo base_url()?>/pagos/pay" id="form-pagos">
 				
 					<div class="modal-body">
 						

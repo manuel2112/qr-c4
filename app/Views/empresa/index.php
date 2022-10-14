@@ -82,7 +82,7 @@
 					v-if=" permiso ">
 					<strong>EDITAR DATOS DE LA EMPRESA</strong>
 				</button>
-				<a href="<?php echo base_url()?>pagos" class="btn btn-danger" v-else>
+				<a href="<?php echo base_url()?>/pagos" class="btn btn-danger" v-else>
 					<strong>
 						RENOVAR MEMBRESÍA 
 						<i class="fa fa-chevron-right"></i>
@@ -131,7 +131,7 @@
 					</tr>
 				</table>
 				
-				<a href="<?php echo base_url()?>pagos" class="btn btn-info">
+				<a href="<?php echo base_url()?>/pagos" class="btn btn-info">
 					<strong>
 						CENTRO DE PAGOS 
 						<i class="fa fa-chevron-right"></i>
@@ -177,7 +177,7 @@
 					v-if=" permiso ">
 					<strong>EDITAR REDES SOCIALES</strong>
 				</button>
-				<a href="<?php echo base_url()?>pagos" class="btn btn-danger" v-else>
+				<a href="<?php echo base_url()?>/pagos" class="btn btn-danger" v-else>
 					<strong>
 						RENOVAR MEMBRESÍA 
 						<i class="fa fa-chevron-right"></i>
@@ -199,7 +199,7 @@
 						<strong>{{ txtIngresarEditarLogo }} LOGOTIPO</strong>
 					</button>
 				</div>
-				<a href="<?php echo base_url()?>pagos" class="btn btn-danger" v-else>
+				<a href="<?php echo base_url()?>/pagos" class="btn btn-danger" v-else>
 					<strong>
 						RENOVAR MEMBRESÍA 
 						<i class="fa fa-chevron-right"></i>

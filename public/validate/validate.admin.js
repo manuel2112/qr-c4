@@ -125,7 +125,7 @@ new Vue({
         instanciar() {
             Swal.showLoading();
             const self = this;
-            this.$http.post(`${base_url}/admin/instanciar`).then(function(res) {
+            this.$http.post(`${base_url}admin/instanciar`).then(function(res) {
                 
                 self.empresas = res.data.empresas;
                 Swal.close();
@@ -152,7 +152,7 @@ new Vue({
             const titleAccion   = 'SELECCIONAR EMPRESA';
 
             const dataString = { idEmpresa: this.empresaCmb };
-            this.$http.post(`${base_url}/admin/getEmpresa`, dataString).then(function(res) {
+            this.$http.post(`${base_url}admin/getEmpresa`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -197,7 +197,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(`${base_url}/admin/getDatos`, dataString).then(function(res) {
+            this.$http.post(`${base_url}admin/getDatos`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -221,7 +221,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(`${base_url}/admin/getPlan`, dataString).then(function(res) {
+            this.$http.post(`${base_url}admin/getPlan`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -243,7 +243,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(`${base_url}/admin/getMenu`,dataString).then(function(res) {
+            this.$http.post(`${base_url}admin/getMenu`,dataString).then(function(res) {
 
                 self.grupos = res.data.grupos;
                 self.maxImgs = res.data.plan.MEMBRESIA_IMG;
@@ -262,7 +262,7 @@ new Vue({
             this.resetInfo();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(`${base_url}/admin/getAcciones`, dataString).then(function(res) {
+            this.$http.post(`${base_url}admin/getAcciones`, dataString).then(function(res) {
 
                 Swal.close();
                 if ( res.data.ok ) {
@@ -283,7 +283,7 @@ new Vue({
             const titleAccion   = 'ACCIONES';
             this.resetInfo();
             
-            this.$http.post(`${base_url}/admin/getPlanes`).then(function(res) {
+            this.$http.post(`${base_url}admin/getPlanes`).then(function(res) {
                 
                 if ( res.data.ok ) {
                     self.planes  = res.data.planes;
@@ -321,7 +321,7 @@ new Vue({
                 preConfirm: (password) => {
 
                     const dataString = { mdl: this.mdl, password: password };
-                    return this.$http.post(`${base_url}/admin/insertGift`, dataString).then(res => {
+                    return this.$http.post(`${base_url}admin/insertGift`, dataString).then(res => {
 
                         if( res.data.ok ){
                             self.swalSuccess('MEMBRESÍA', 'MEMBRESÍA OTORGADA CON ÉXITO');
@@ -359,7 +359,7 @@ new Vue({
             this.btnEditOrderGrupoLoad(true, true);
 
             const dataString    = { grupos: this.gruposEdit, idEmpresa: this.empresa.EMPRESA_ID };
-            this.$http.post(`${base_url}/admin/orderGrupo`, dataString).then(function(res) {
+            this.$http.post(`${base_url}admin/orderGrupo`, dataString).then(function(res) {
 
                 if ( res.data.ok ) {
                     self.swalSuccess(titleAccion, textAccion)
@@ -446,7 +446,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
             
-            this.$http.post(`${base_url}/admin/insertGrupo`, formData).then(function(res) {
+            this.$http.post(`${base_url}admin/insertGrupo`, formData).then(function(res) {
 
                 self.btnInsertGrupoLoad(false, false);
                 if( res.data.ok ){
@@ -575,7 +575,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
 
-            this.$http.post(`${base_url}/admin/insertProducto`, formData).then(function(res) {
+            this.$http.post(`${base_url}admin/insertProducto`, formData).then(function(res) {
                                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -655,7 +655,7 @@ new Vue({
             formData.append('widthResize', this.widthResize );
             formData.append('coords', JSON.stringify(this.coords) );
             
-            this.$http.post(`${base_url}/admin/editGrupo`, formData).then(function(res) {
+            this.$http.post(`${base_url}admin/editGrupo`, formData).then(function(res) {
                 
                 self.btnEditGrupoLoad(false, false);                
                 if( res.data.ok ){
@@ -692,7 +692,7 @@ new Vue({
             Swal.showLoading();
 
             const dataString = { idEmpresa: this.empresa.EMPRESA_ID, productos: this.productosEdit };
-            this.$http.post(`${base_url}/admin/orderProductos`, dataString).then(function(res) {
+            this.$http.post(`${base_url}admin/orderProductos`, dataString).then(function(res) {
 
                 self.btnEditOrderProductosLoad(false, false);
                 if ( res.data.ok ) {
@@ -723,7 +723,7 @@ new Vue({
             const txtText       = value.GRUPO_SHOW == 1 ? `ESTA ACCIÓN OCULTARÁ EL GRUPO ${value.GRUPO_NOMBRE}.` : `ESTA ACCIÓN MOSTRARÁ EL GRUPO ${value.GRUPO_NOMBRE}.`;
             const buttonText    = value.GRUPO_SHOW == 1 ? "SI, OCULTAR GRUPO!" : "SI, ACTIVAR GRUPO!";
             const buttonColor   = value.GRUPO_SHOW == 1 ? "#d9534f" : "#5cb85c";
-            const apiRest       = `${base_url}/admin/grupoHidden`;
+            const apiRest       = `${base_url}admin/grupoHidden`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, idGrupo: value.GRUPO_ID, value: value.GRUPO_SHOW };
             const titleAccion   = 'GRUPOS';
             const textAccion    = value.GRUPO_SHOW == 0 ? "EL GRUPO HA SIDO ACTIVADO" :  "EL GRUPO HA SIDO DESACTIVADO";
@@ -737,7 +737,7 @@ new Vue({
             const txtText       = `ESTA ACCIÓN ELIMINARÁ EL GRUPO ${value.GRUPO_NOMBRE}, PRODUCTOS Y LOS VALORES ASOCIADOS`;
             const buttonText    = 'SI, ELIMINAR GRUPO';
             const buttonColor   = '#d9534f';
-            const apiRest       = `${base_url}/admin/grupoDelete`;
+            const apiRest       = `${base_url}admin/grupoDelete`;
             const dataString    = { idEmpresa: this.empresa.EMPRESA_ID, idGrupo: value.GRUPO_ID };
             const titleAccion   = 'GRUPOS';
             const textAccion    = 'EL GRUPO HA SIDO ELIMINADO EXITOSAMENTE';
@@ -752,7 +752,7 @@ new Vue({
             Swal.showLoading();
 
             let dataString = { idProducto: p.PRODUCTO_ID, limit: this.maxImgs };
-            this.$http.post( `${base_url}/admin/getProducto`, dataString ).then(function(res) {
+            this.$http.post( `${base_url}admin/getProducto`, dataString ).then(function(res) {
 
                 self.productoGetVPS     = res.data.vps;
                 self.productoGetImgs    = res.data.imagenes;
@@ -793,7 +793,7 @@ new Vue({
             formData.append('idEmpresa', this.empresa.EMPRESA_ID );
             formData.append('producto', JSON.stringify(this.productosEdit) );
 
-            this.$http.post(`${base_url}/admin/editProducto`, formData).then(function(res) {
+            this.$http.post(`${base_url}admin/editProducto`, formData).then(function(res) {
                 
                 self.btnEditProductoLoad(false, false);
                 if( res.data.ok ){
@@ -824,7 +824,7 @@ new Vue({
             let array               = [];
 
             let dataString = { idProducto: p.PRODUCTO_ID, limit: this.maxImgs };
-            this.$http.post(`${base_url}/admin/getProducto`, dataString ).then(function(res) {
+            this.$http.post(`${base_url}admin/getProducto`, dataString ).then(function(res) {
 
                 res.data.vps.forEach(element => {
                     array.push({ nombre: element.PROVAR_NOMBRE, valor: element.PROVAR_VALOR })
@@ -860,7 +860,7 @@ new Vue({
                                  idProducto: this.productoGet.PRODUCTO_ID, 
                                  vps: JSON.stringify(this.productoEditVPS) 
                                };
-            this.$http.post(`${base_url}/admin/editVP`, dataString).then(function(res) {                
+            this.$http.post(`${base_url}admin/editVP`, dataString).then(function(res) {                
                 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);

@@ -28,7 +28,7 @@ class Menu extends BaseController {
 	{
 		if( !tieneMembresia($this->session_id) ){
 			session()->setFlashdata('sinMembresia', true);
-			return redirect()->to('pagos'); 
+			return redirect()->to(base_url('pagos'));
 		}
 
 		return view('menu/index');

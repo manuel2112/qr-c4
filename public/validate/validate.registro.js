@@ -60,7 +60,7 @@ var app = new Vue({
     methods: {
         instanciar() {
             const self = this;
-            this.$http.post(base_url + 'login/referido').then(function(res) {
+            this.$http.post(`${base_url}login/referido`).then(function(res) {
 
                 self.referidos =  res.data.referidos;
                                 
@@ -232,7 +232,7 @@ var app = new Vue({
             this.loadingCity    = '<i class="fas fa-spinner fa-spin"></i>';
 
             const dataString = { region: this.region };
-            this.$http.post(base_url + 'geo/ciudadPorRegion', dataString).then(function(res) {
+            this.$http.post(`${base_url}geo/ciudadPorRegion`, dataString).then(function(res) {
 
                 self.ciudades = res.data.ciudades;
                 self.dsbCiudad = self.region != '' ? false : true;

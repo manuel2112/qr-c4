@@ -1,23 +1,32 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Contacto extends CI_Controller {
+namespace App\Controllers;
+
+use App\Models\EmpresaModel;
+use App\Models\MembresiaModel;
+
+class Contacto extends BaseController {
+
+	public $empresa_model;
+	public $membresia_model;
 	
 	public function __construct()
 	{
-		parent::__construct();
-		if (!$this->session->userdata('idqrsession')) {
-			$this->session->set_userdata('', current_url());
-			redirect(base_url('login'));
+		if (!session('usuario')) {
+			header('Location: '.base_url('login'));
+			exit();
 		}
-		$this->session_id 			= $this->session->userdata('idqrsession');
-		$this->session_nmb 			= $this->session->userdata('nmbqrsession');
-		$this->isadminqrsession 	= $this->session->userdata('isadminqrsession');
+
+		$this->empresa_model 	= new EmpresaModel();
+		$this->membresia_model 	= new MembresiaModel();
+
+		$session = session();
+		$this->session_id 		= $session->get('usuario')['idqrsession'];
 	}
 	
 	public function index()
 	{
-		$this->layout->view('index');
+		return view('contacto/index');
 	}
 
 	public function instanciar()
@@ -56,7 +65,7 @@ class Contacto extends CI_Controller {
 									),
 								);
         
-        echo json_encode($data);
+        return $this->response->setJSON($data);
 	}
 
 	public function send()
@@ -66,8 +75,8 @@ class Contacto extends CI_Controller {
 		$request	= json_decode(file_get_contents('php://input'));
 		$asunto		= $request->asunto; 
 		$mensaje	= $request->mensaje;
-		$empresa	= $this->empresa_model->getEmpresaRow($idEmpresa);
-		$membresia	= $this->membresia_model->getMembresiaEmpresaEnUso($idEmpresa);
+		$empresa	= $this->empresa_model->getEmpresaRow($idEmpresa)->getRow();
+		$membresia	= $this->membresia_model->getMembresiaEmpresaEnUso($idEmpresa)->getRow();
 
 		//PASA A PHPMAILER
 		$exito = email_formulario($empresa->EMPRESA_NOMBRE,$empresa->EMPRESA_EMAIL,$membresia->MEMBRESIA_NOMBRE,$mensaje,$asunto);
@@ -75,7 +84,7 @@ class Contacto extends CI_Controller {
 		//ERROR DE ENVÍO
 		$data['ok']	= $exito ? true : false;
 
-		echo json_encode($data);		
+		return $this->response->setJSON($data);		
 	}
 	
 }

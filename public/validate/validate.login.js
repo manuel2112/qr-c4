@@ -69,7 +69,7 @@ var app = new Vue({
             Swal.showLoading();
             
             const dataString = { login: this.login };
-            this.$http.post(base_url + 'login/login', dataString).then(function(res) {
+            this.$http.post(`${base_url}login/login`, dataString).then(function(res) {
 
                 if( !res.data.existe ){
                     self.swalErrorText(titleAccion, 'USUARIO/CONTRASEÑA NO COINCIDEN, FAVOR VOLVER A INTENTAR');
@@ -108,7 +108,7 @@ var app = new Vue({
             Swal.showLoading();
             
             var dataString = { contacto: this.contacto };
-            this.$http.post(base_url + 'login/contacto', dataString ).then(function(res) {
+            this.$http.post(`${base_url}login/contacto`, dataString ).then(function(res) {
 
                 if( res.data.ok ){
                     self.swalSuccess(titleAccion, textAccion);
@@ -177,12 +177,19 @@ var app = new Vue({
             var dataString = { recuperar: this.recuperar };
             this.$http.post(`${base_url}login/recuperarpass`, dataString ).then(function(res) {
 
+                console.log(res.data)
+
                 if( res.data.ok ){
-                    self.swalSuccess(titleAccion, textAccion);
-                    self.recuperar = {};
-                    self.btnRecuperarLoad(false, true);
+                    if( res.data.send ){
+                        self.swalSuccess(titleAccion, textAccion);
+                        self.recuperar = {};
+                        self.btnRecuperarLoad(false, true);
+                    }else{                        
+                        self.swalErrorText(titleAccion, 'SE HA PRODUCIDO UN ERROR , FAVOR VOLVER A INTENTAR');
+                        self.btnRecuperarLoad(false, false);
+                    }
                 }else if( res.data.existe ){
-                    self.swalErrorText(titleAccion, 'EMAIL NO REGISTRADO, FAVOR INGRESAR UN EMAIL EXISTENTE EN NUESTRA BASE DE DATOS');
+                    self.swalErrorText(titleAccion, 'EMAIL NO REGISTRADO, FAVOR INGRESAR UN EMAIL EXISTENTE');
                     self.btnRecuperarLoad(false, false);
                 }else{
                     self.swalErrorText(titleAccion, 'SE HA PRODUCIDO UN ERROR , FAVOR VOLVER A INTENTAR');
@@ -221,7 +228,7 @@ var app = new Vue({
             Swal.showLoading();
             
             var dataString = { pass: this.pass };
-            this.$http.post(base_url + 'login/changepass', dataString ).then(function(res) {
+            this.$http.post(`${base_url}login/changepass`, dataString ).then(function(res) {
 
                 self.btnPassLoad(false, false);
                 if( res.data.ok ){

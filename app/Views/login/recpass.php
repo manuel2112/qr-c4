@@ -5,9 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title><?php echo $this->layout->getTitle(); ?></title>
-    <meta name="description" content="<?php echo $this->layout->getDescripcion(); ?>"  />
-    <meta name="keywords" content="<?php echo $this->layout->getKeywords(); ?>" />
+    <title><?php echo title() ?></title>
     
     <link rel="stylesheet" href="<?php echo base_url('public/css/bootstrap.min.css')?>">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css">
@@ -82,7 +80,7 @@
     </div><!-- FIN LOGIN -->
 
     <script type="text/javascript">
-        var base_url	    = '<?php echo base_url();?>';
+        var base_url	    = '<?php echo base_url();?>/';
         Vue.prototype.$http = axios
     </script>
     <script src="<?php echo base_url('public/js/jquery.min.js')?>"></script>

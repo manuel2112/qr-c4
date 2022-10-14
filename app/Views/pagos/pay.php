@@ -1,10 +1,16 @@
+<?php 
+	$this->extend('layouts/main');
+	$session = session();
+	$this->section('content')
+?>
+
 <div id="index">
 
     <div class="row">
         <div class="col-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $this->session_nmb?></a></li>
+                    <li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $session->get('usuario')['nmbqrsession'] ?></a></li>
                     <li class="breadcrumb-item"><a href="<?php echo base_url('pagos')?>">Centro de Pagos</a</li>
                     <li class="breadcrumb-item"><a href="<?php echo base_url('pagos/miscompras')?>">Mis Compras</a></li>
                     <li class="breadcrumb-item active">Pago</li>
@@ -90,8 +96,8 @@
                         </tbody>
                     </table>
 
-                    <form action="<?php echo $formAction ?>" method="POST" style="width:100%">
-                        <input type="hidden" name="token_ws" value="<?php echo $tokenWs ?>">
+                    <form action="<?php echo $url_to_pay ?>" method="POST" style="width:100%">
+                        <input type="hidden" name="token_ws" value="<?php echo $token ?>">
                         <button type="submit" class="btn btn-success btn-lg btn-block">
                             PAGAR AHORA <i class="fa fa-chevron-right"></i><i class="fa fa-chevron-right"></i>
                         </button>
@@ -107,5 +113,4 @@
 
 </div>
 
-
-
+<?php $this->endSection() ?>

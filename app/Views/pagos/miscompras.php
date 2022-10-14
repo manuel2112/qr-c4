@@ -1,8 +1,14 @@
+<?php 
+	$this->extend('layouts/main');
+	$session = session();
+	$this->section('content')
+?>
+
 <div class="row">
 	<div class="col-12">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $this->session_nmb?></a></li>
+                <li class="breadcrumb-item"><a href="<?php echo base_url('home')?>"><?php echo $session->get('usuario')['nmbqrsession'] ?></a></li>
                 <li class="breadcrumb-item"><a href="<?php echo base_url('pagos')?>">Centro de Pagos</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Mis Compras</li>
 
@@ -58,3 +64,5 @@
 
 	</div>
 </div><!-- FIN ROW PRINCIPAL -->
+
+<?php $this->endSection() ?>

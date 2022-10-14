@@ -18,7 +18,7 @@ new Vue({
         instanciar() {
             Swal.showLoading();
             const self = this;
-            this.$http.post(base_url + 'contacto/instanciar').then(function(res) {
+            this.$http.post(`${base_url}contacto/instanciar`).then(function(res) {
                 
                 self.asuntos = res.data.asuntos;
                 Swal.close();
@@ -40,7 +40,7 @@ new Vue({
             Swal.showLoading();
             
             var dataString = { asunto: this.asunto.value , mensaje: this.mensaje };
-            this.$http.post(base_url + 'contacto/send', dataString ).then(function(res) {
+            this.$http.post(`${base_url}contacto/send`, dataString ).then(function(res) {
                 
                 self.btnMsnLoad(true, false);
                 if( res.data.ok ){

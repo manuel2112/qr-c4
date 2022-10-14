@@ -172,16 +172,17 @@ class EmpresaModel extends Model
 
   public function getEmpresaNewPass($email,$hash)
   {
-      $where = array(
-                      "EMPRESA_EMAIL"     => $email,
-                      "EMPRESA_REC_PASS"  => $hash
-                    );
-      $query = $this->db
-                      ->select("*")
-                      ->from("empresa")
-                      ->where($where)
-                      ->get();
-      return $query->row();
+    $where = array(
+                    "EMPRESA_EMAIL"     => $email,
+                    "EMPRESA_REC_PASS"  => $hash
+                  );
+
+    $builder = $this->db->table('empresa');
+    $builder->select('*');
+    $builder->where($where);
+    $query = $builder->get();
+
+    return $query;
   }
 
 	/*=============================================

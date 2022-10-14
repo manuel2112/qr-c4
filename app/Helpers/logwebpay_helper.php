@@ -1,35 +1,33 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+use App\Models\PagoModel;
 
 if(!function_exists('crearLogPlus'))
 {    
-	function crearLogPlus($log,$status)
+	function crearLogPlus($response)
 	{
-        $ci = &get_instance();
-        $ci->load->helper('file');
-        $ci->load->model('pago_model');
-        $mdlPago = $ci->pago_model->getPagoRow( 'PAGO_ORDEN', $log->buyOrder );
-        if( $mdlPago ){
-            $ci->pago_model->insertPagoRequest( $mdlPago->PAGO_ID, $log, $status );
-        }
+		$pago_model   	= new PagoModel();
+        
+        $mdlPago = $pago_model->getPagoRow( 'PAGO_ID', $response->buyOrder )->getRow();
         
         $var  = '';
         $var .= 'FECHA: ' . fechaNow() ."\n";
-        $var .= 'vci: ' . $log->vci ."\n";
-        $var .= 'amount: ' . $log->amount ."\n";
-        $var .= 'status: ' . $log->status ."\n";
-        $var .= 'buyOrder: ' . $log->buyOrder ."\n";
-        $var .= 'sessionId: ' . $log->sessionId ."\n";
-        $var .= 'card_number: ' . $log->cardDetail['card_number'] ."\n";
-        $var .= 'accountingDate: ' . $log->accountingDate ."\n";
-        $var .= 'transactionDate: ' . $log->transactionDate ."\n";
-        $var .= 'authorizationCode: ' . $log->authorizationCode ."\n";
-        $var .= 'paymentTypeCode: ' . $log->paymentTypeCode ."\n";
-        $var .= 'responseCode: ' . $log->responseCode ."\n";
-        $var .= 'installmentsAmount: ' . $status->installmentsAmount ."\n";
-        $var .= 'installmentsNumber: ' . $status->installmentsNumber ."\n";
-        $var .= 'balance: ' . $status->balance ."\n";
+        $var .= 'vci: ' . $response->vci ."\n";
+        $var .= 'amount: ' . $response->amount ."\n";
+        $var .= 'status: ' . $response->status ."\n";
+        $var .= 'buyOrder: ' . $response->buyOrder ."\n";
+        $var .= 'sessionId: ' . $response->sessionId ."\n";
+        $var .= 'card_number: ' . $response->cardDetail['card_number'] ."\n";
+        $var .= 'accountingDate: ' . $response->accountingDate ."\n";
+        $var .= 'transactionDate: ' . $response->transactionDate ."\n";
+        $var .= 'authorizationCode: ' . $response->authorizationCode ."\n";
+        $var .= 'paymentTypeCode: ' . $response->paymentTypeCode ."\n";
+        $var .= 'responseCode: ' . $response->responseCode ."\n";
+        $var .= 'installmentsAmount: ' . $response->installmentsAmount ."\n";
+        $var .= 'installmentsNumber: ' . $response->installmentsNumber ."\n";
+        $var .= 'balance: ' . $response->balance ."\n";
         
-        logCompra($log->buyOrder,$var);
+        logCompra($mdlPago->PAGO_ORDEN,$var);
 	}
 }
 
@@ -63,6 +61,6 @@ if(!function_exists('tipoPago'))
             $var = '';
         }
 
-        return utf8_decode($var);
+        return $var;
 	}
 }

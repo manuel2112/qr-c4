@@ -36,8 +36,8 @@ class Tipospago extends BaseController {
 
         //INSTANCIAR VALORES
         $existe = $this->tipopago_model->getTipoEntregaEmpresa($idEmpresa)->getResult();
-        if( !$existe ){
-            $tiposEntrega   = $this->tipopago_model->getTipoEntrega()->getResult;
+        if( count($existe) == 0 ){
+            $tiposEntrega   = $this->tipopago_model->getTipoEntrega()->getResult();
             $tiposPago      = $this->tipopago_model->getTipoPago()->getResult();
 
             foreach( $tiposEntrega as $tipo ){
@@ -57,6 +57,7 @@ class Tipospago extends BaseController {
         }
 
 		$empresa = $this->empresa_model->getEmpresaRow($idEmpresa)->getRow();
+		
 		$data['empresaPago'] 	= $empresa->EMPRESA_PAGO == 1 ? TRUE : FALSE;
 		$data['tiposEntrega'] 	= $this->tipopago_model->getTipoEntregaEmpresa($idEmpresa)->getResult();
 		$data['tiposPago'] 		= $this->tipopago_model->getTipoPagoEmpresa($idEmpresa)->getResult();

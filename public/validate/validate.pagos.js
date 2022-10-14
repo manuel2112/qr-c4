@@ -22,7 +22,7 @@ new Vue({
             Swal.showLoading();
             const self = this;
 
-            this.$http.post(base_url + 'pagos/instanciar').then(function(res) {
+            this.$http.post(`${base_url}pagos/instanciar`).then(function(res) {
 
                 self.msnMembresia   = res.data.msnMembresia;
                 self.textos         = res.data.textos;
@@ -41,7 +41,7 @@ new Vue({
             if( this.cantMeses > 0 ){
 
                 let dataString = { cantMeses: this.cantMeses, valor: this.membresia.MEMBRESIA_VALOR };
-                this.$http.post(base_url + 'pagos/calcMembresia', dataString).then(function(res) {
+                this.$http.post(`${base_url}pagos/calcMembresia`, dataString).then(function(res) {
 
                     if( res.data.ok ){
 
@@ -75,7 +75,7 @@ new Vue({
             const self = this;
 
             const dataString = { idMembresia: e };
-            this.$http.post(base_url + 'pagos/seleccionarMembresia', dataString).then(function(res) {
+            this.$http.post(`${base_url}pagos/seleccionarMembresia`, dataString).then(function(res) {
                 
                 self.membresia = res.data.membresia;
                 Swal.close();
